@@ -35,26 +35,23 @@ MainController::MainController(QObject* parent)
     : QObject{parent},
       api_model_{new models::APIModel{this}},
       account_handler_controller_{new AccountHandlerController{*main_window_, this}} {
+  QTimer::singleShot(0, this, SLOT(EventLoopStarted()));
+}
+
+void MainController::EventLoopStarted() {
+  connect(this, SIGNAL(InvokeAccountHandlerController()),
+          account_handler_controller_, SLOT(Invoke()),
+          Qt::UniqueConnection);
+
   RegisterQtMetaTypes();
   RegisterQmlTypes();
   SetContexProperties();
 
-  // TODO(Spandan) There is crash right now on my system (Ubunut).
-  // connections
   connect(this, SIGNAL(InvokeAccountHandlerController()),
           account_handler_controller_, SLOT(Invoke()),
           Qt::UniqueConnection);
 
   installEventFilter(this);
-
-  QTimer::singleShot(0, this, SLOT(EventLoopStarted()));
-}
-
-void MainController::EventLoopStarted() {
-  // TODO(Spandan) move this to the constructor. There is crash right now on my system (Ubunut).
-//  connect(this, SIGNAL(InvokeAccountHandlerController()),
-//          account_handler_controller_, SLOT(Invoke()),
-//          Qt::UniqueConnection);
 
   main_window_->setSource(QUrl{"qrc:/views/MainWindow.qml"});
   emit InvokeAccountHandlerController();
