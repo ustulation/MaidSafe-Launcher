@@ -34,7 +34,7 @@ MainController::MainController(QObject* parent) : QObject{parent} {
   QTimer::singleShot(0, this, SLOT(EventLoopStarted()));
 }
 
-MainController::~MainController() noexcept = default;
+MainController::~MainController() MAIDSAFE_NOEXCEPT = default;
 
 void MainController::EventLoopStarted() {
   main_window_.reset(new helpers::MainWindow);
@@ -52,7 +52,9 @@ void MainController::EventLoopStarted() {
   emit InvokeAccountHandlerController();
 }
 
-MainController::MainViews MainController::currentView() const { return current_view_; }
+MainController::MainViews MainController::currentView() const {
+  return current_view_;
+}
 
 void MainController::SetCurrentView(const MainViews new_current_view) {
   if (new_current_view != current_view_) {

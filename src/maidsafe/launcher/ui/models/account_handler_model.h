@@ -24,6 +24,8 @@
 #include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
 #include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
 
+#include "maidsafe/common/config.h"
+
 namespace maidsafe {
 
 namespace launcher {
@@ -41,7 +43,7 @@ class AccountHandlerModel : public QObject {
 
  public:
   explicit AccountHandlerModel(QObject* parent = nullptr);
-  ~AccountHandlerModel() noexcept override;
+  ~AccountHandlerModel() MAIDSAFE_NOEXCEPT override;
 
   std::unique_ptr<Launcher> Login(const QString& pin, const QString& keyword,
                                   const QString& password);

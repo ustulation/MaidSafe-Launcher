@@ -24,7 +24,7 @@
 #include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
 #include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
 
-// #include "maidsafe/launcher/launcher.h"
+#include "maidsafe/common/config.h"
 
 namespace maidsafe {
 
@@ -53,31 +53,29 @@ class AccountHandlerController : public QObject {
   enum AccountHandlingViews { LoginView, CreateAccountView, };
 
   AccountHandlerController(helpers::MainWindow& main_window, QObject* parent);
-  ~AccountHandlerController() noexcept override;
-
-  AccountHandlingViews currentView() const;
-  void setCurrentView(const AccountHandlingViews new_current_view);
-  Q_SIGNAL void currentViewChanged(AccountHandlingViews arg);
-
-  Q_INVOKABLE void login(const QString& pin, const QString& keyword, const QString& password);
-  Q_INVOKABLE void showLoginView();
-
-  Q_INVOKABLE void createAccount(const QString& pin, const QString& keyword,
-                                 const QString& password);
-  Q_INVOKABLE void showCreateAccountView();
-
+  ~AccountHandlerController() MAIDSAFE_NOEXCEPT override;
   AccountHandlerController(AccountHandlerController&&) = delete;
   AccountHandlerController(const AccountHandlerController&) = delete;
   AccountHandlerController& operator=(AccountHandlerController&&) = delete;
   AccountHandlerController& operator=(const AccountHandlerController&) = delete;
 
+  AccountHandlingViews currentView() const;
+  void setCurrentView(const AccountHandlingViews new_current_view);
+
+  Q_INVOKABLE void login(const QString& pin, const QString& keyword, const QString& password);
+  Q_INVOKABLE void showLoginView();
+  Q_INVOKABLE void createAccount(const QString& pin, const QString& keyword,
+                                 const QString& password);
+  Q_INVOKABLE void showCreateAccountView();
+
+ signals:  // NOLINT - Spandan
+  void LoginCompleted();
+  void currentViewChanged(AccountHandlingViews arg);
+
  private slots:  // NOLINT - Spandan
   void Invoke();
   void LoginResultAvailable();
   void CreateAccountResultAvailable();
-
-signals:  // NOLINT - Spandan
-  void LoginCompleted();
 
  private:
   helpers::MainWindow& main_window_;
