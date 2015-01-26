@@ -20,9 +20,11 @@
 #define MAIDSAFE_LAUNCHER_APP_HANDLER_H_
 
 #include <cstdint>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <set>
+#include <utility>
 
 #include "boost/filesystem/path.hpp"
 
@@ -38,14 +40,18 @@ struct Account;
 struct AppDetails;
 
 // This class only offers the basic exception safety guarantee, but it allows a snapshot to be taken
-// so that the owning Launcher class can revert this to the snapshot state if required.
+// so that the owning Launcher class can revert this to the snapshot state if required.  The
+// Snapshot struct provides a RAII copy of the config file.  When an instance of a Snaphot is
+// created, a copy of the config file is created and the path to this copy held in a shared_ptr
+// member of the Snapshot instance.  When the final copy of this Snapshot instance is destroyed, the
+// copied file is also removed from disk.
 class AppHandler {
  public:
   struct Snapshot {
     friend class AppHandler;
    private:
     std::set<AppDetails> local_apps, non_local_apps;
-    boost::filesystem::path config_file;  // TODO(Fraser#5#): 2015-01-21 - handle config file throwing when reapplying snapshot - terminate?
+    std::shared_ptr<boost::filesystem::path> config_file;
   };
 
   AppHandler();
@@ -62,7 +68,9 @@ class AppHandler {
   void ApplySnapshot(Snapshot snapshot);
 
   std::set<AppDetails> GetApps(bool locally_available) const;
-  void Add(std::string app_name, boost::filesystem::path app_path, std::string app_args);
+  // Link if 'app_icon' is null, else Add.
+  AppDetails AddOrLinkApp(std::string app_name, boost::filesystem::path app_path,
+                          std::string app_args, const SerialisedData* const app_icon);
   void UpdateName(const std::string& app_name, const std::string& new_name);
   void UpdatePath(const std::string& app_name, const boost::filesystem::path& new_path);
   void UpdateArgs(const std::string& app_name, const std::string& new_args);
@@ -70,13 +78,17 @@ class AppHandler {
   void UpdateIcon(const std::string& app_name, const SerialisedData& new_icon);
   void RemoveLocally(const std::string& app_name);
   void RemoveFromNetwork(const std::string& app_name);
-  void Launch(const std::string& app_name, tcp::Port our_port);
+  std::pair<boost::filesystem::path, std::string> GetPathAndArgs(std::string app_name) const;
 
  private:
   using LockGuardPtr = std::unique_ptr<std::lock_guard<std::mutex>>;
   std::pair<LockGuardPtr, LockGuardPtr> AcquireLocks() const;
   void ReadConfigFile();
   void WriteConfigFile() const;
+  void Add(AppDetails& app, std::set<AppDetails>::iterator account_itr,
+           std::set<AppDetails>::iterator local_itr, std::set<AppDetails>::iterator non_local_itr);
+  void Link(AppDetails& app, std::set<AppDetails>::iterator account_itr,
+            std::set<AppDetails>::iterator local_itr, std::set<AppDetails>::iterator non_local_itr);
   void Update(const std::string& app_name, const std::string* const new_name,
               const boost::filesystem::path* const new_path, const std::string* const new_args,
               const DirectoryInfo* const new_dir, const SerialisedData* const new_icon);
