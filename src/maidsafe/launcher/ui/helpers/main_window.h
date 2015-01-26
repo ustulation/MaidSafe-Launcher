@@ -19,7 +19,8 @@
 #ifndef MAIDSAFE_LAUNCHER_UI_HELPERS_MAIN_WINDOW_H_
 #define MAIDSAFE_LAUNCHER_UI_HELPERS_MAIN_WINDOW_H_
 
-#include <QQuickView>
+#include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
+#include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
 
 namespace maidsafe {
 
@@ -34,9 +35,12 @@ class MainWindow : public QQuickView {
 
  public:
   explicit MainWindow(QWindow* parent = nullptr);
-  ~MainWindow() override;
+  ~MainWindow() noexcept override;
 
-  void CenterToScreen();
+  Q_INVOKABLE void centerToScreen();
+  Q_INVOKABLE void setWindowSize(const int width, const int height);
+  Q_INVOKABLE void changeWindowPosition(int deltaX, int deltaY);
+  Q_INVOKABLE void changeWindowSize(int deltaX, int deltaY);
 
  private slots:  // NOLINT - Viv
   void StatusChanged(const QQuickView::Status status);

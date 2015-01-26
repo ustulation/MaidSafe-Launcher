@@ -16,7 +16,10 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+#ifndef MAIDSAFE_LAUNCHER_UI_HELPERS_RAII_DISPATCHER_H_
+#define MAIDSAFE_LAUNCHER_UI_HELPERS_RAII_DISPATCHER_H_
+
+#include <functional>
 
 namespace maidsafe {
 
@@ -24,14 +27,21 @@ namespace launcher {
 
 namespace ui {
 
-namespace models {
+namespace helpers {
 
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
+struct RAIIDispatcher {
+  using Callable = std::function<void()>;
+  explicit RAIIDispatcher(const Callable& c) : c_{c} {}
+  ~RAIIDispatcher() { c_(); }
+  Callable c_;
+};
 
-}  // namespace models
+}  // namespace helpers
 
 }  // namespace ui
 
 }  // namespace launcher
 
 }  // namespace maidsafe
+
+#endif  // MAIDSAFE_LAUNCHER_UI_HELPERS_RAII_DISPATCHER_H_

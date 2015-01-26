@@ -19,35 +19,33 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
-import "../resources/js/brushes.js" as DefaultBrushes
 
 TextField {
-  FontLoader { id: arialFont; name: "Arial" }
+  id: textField
+  objectName: "textField"
 
-  property bool isMarkerTextVisible : true
+  font { pixelSize: globalProperties.fontPixelSize; family: globalFontFamily.name }
+  horizontalAlignment: TextInput.AlignHCenter
+  verticalAlignment: TextInput.AlignVCenter
 
-  font.pixelSize: 12
-  horizontalAlignment: Qt.AlignHCenter
   style: TextFieldStyle {
+    id: textFieldStyle
+    objectName: "textFieldStyle"
+
+    textColor: globalBrushes.textGrey
+
+    placeholderTextColor: control.activeFocus ?
+                            globalBrushes.placeHolderFocusGrey
+                          :
+                            globalBrushes.placeHolderDefaultGrey
+
     background: Rectangle {
-      border {
-        color: {
-          if (!control.enabled) {
-            DefaultBrushes.disabledGray
-          } else if (control.activeFocus) {
-            DefaultBrushes.focusBlack
-          } else {
-            DefaultBrushes.borderGray
-          }
-        }
-        width: 1
-      }
-      implicitHeight: 30
-      implicitWidth: 225
+      id: backgroundRect
+      objectName: "backgroundRect"
+
+      implicitHeight: globalProperties.textFieldHeight
+      implicitWidth: globalProperties.textFieldWidth
+      radius: globalProperties.textFieldRadius
     }
-    font: arialFont.name
-    selectionColor: DefaultBrushes.selectionBlue
-    selectedTextColor: DefaultBrushes.focusBlack
-    textColor: !control.enabled ? DefaultBrushes.disabledGray : DefaultBrushes.focusBlack
   }
 }

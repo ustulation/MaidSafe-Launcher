@@ -46,4 +46,3 @@ class APIModel : public QObject {
 }  // namespace maidsafe
 
 #endif  // MAIDSAFE_LAUNCHER_UI_MODELS_API_MODEL_H_
-

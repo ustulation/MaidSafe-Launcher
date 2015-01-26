@@ -16,22 +16,27 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
 
-namespace maidsafe {
+QtObject {
+  id: globalBrushes
+  objectName: "globalBrushes"
 
-namespace launcher {
+  readonly property color textGrey: "#b3b3b3"
+  readonly property color textBlack: "#000000"
+  readonly property color textDefault: "#ffffff"
+  readonly property color textWeakPassword: "#c1272d"
+  readonly property color textMediumPassword: "#f15a24"
+  readonly property color textStrongPassword: "#39b54a"
 
-namespace ui {
+  readonly property color placeHolderFocusGrey: "#70b3b3b3"
+  readonly property color placeHolderDefaultGrey: textGrey
 
-namespace models {
+  readonly property color labelDefault: textDefault
+  readonly property color labelSelected: "#1d6499"
+  readonly property color labelNotSelected: "#ceebf4"
 
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
-
-}  // namespace models
-
-}  // namespace ui
-
-}  // namespace launcher
-
-}  // namespace maidsafe
+  readonly property color buttonDefaultBlue: "#5791CD"
+  readonly property color buttonHoveredBlue: "#457BAF"
+  readonly property color buttonPressedBlue: "#1D5086"
+}

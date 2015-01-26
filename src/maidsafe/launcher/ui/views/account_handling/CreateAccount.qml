@@ -17,8 +17,111 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
+import QtQuick.Controls 1.3
+import QtQuick.Controls.Styles 1.3
 
-Rectangle {
-  width: 100
-  height: 62
+import "../../custom_components"
+
+Item {
+  id: createAccountItem
+  objectName: "createAccountItem"
+
+  QtObject {
+    id: dPtr
+    objectName: "dPtr"
+
+    readonly property var tabModel: [qsTr("PIN"), qsTr("Keyword"), qsTr("Password")]
+
+    property int currentTabIndex: 0
+    property string pin: ""
+    property string keyword: ""
+    property string password: ""
+
+    onCurrentTabIndexChanged: {
+      if(currentTabIndex >= tabModel.length) {
+        currentTabIndex = currentTabIndex % tabModel.length
+        accountHandlerController_.login(pin, keyword, password)
+      }
+    }
+  }
+
+  Row {
+    id: createAccountTabRow
+    objectName: "createAccountTabRow"
+
+    anchors {
+      horizontalCenter: parent.horizontalCenter
+      bottom: textFieldsAndButtonColumn.top; bottomMargin: globalProperties.textFieldHeight
+    }
+
+    spacing: 15
+
+    Repeater {
+      id: tabRepeater
+      objectName: "tabRepeater"
+
+      model: dPtr.tabModel
+
+      delegate: CustomLabel {
+        id: tabLabel
+        objectName: "tabLabel"
+
+        text: modelData
+        color: model.index === dPtr.currentTabIndex ?
+                 globalBrushes.labelSelected
+               :
+                 globalBrushes.labelNotSelected
+      }
+    }
+  }
+
+  Column {
+    id: textFieldsAndButtonColumn
+    objectName: "textFieldsAndButtonColumn"
+
+    anchors {
+      horizontalCenter: parent.horizontalCenter
+      bottom: parent.bottom; bottomMargin: globalProperties.createAccountBottomMargin
+    }
+
+    spacing: globalProperties.textFieldVerticalSpacing
+
+    CustomTextField {
+      id: textFld0
+      objectName: "textFld0"
+
+      anchors.horizontalCenter: parent.horizontalCenter
+      placeholderText: "Place holder text"
+      echoMode: TextInput.Password
+    }
+
+    CustomTextField {
+      id: textFld1
+      objectName: "textFld1"
+
+      anchors.horizontalCenter: parent.horizontalCenter
+      placeholderText: "Place holder text"
+    }
+
+    BlueButton {
+      id: nextButton
+      objectName: "nextButton"
+
+      text: qsTr("Next")
+      onClicked: ++dPtr.currentTabIndex
+    }
+  }
+
+  ClickableText {
+    id: showLoginPageLabel
+    objectName: "showLoginPageLabel"
+
+    anchors {
+      horizontalCenter: parent.horizontalCenter
+      bottom: parent.bottom; bottomMargin: globalProperties.bottomMargin
+    }
+
+    label.text: qsTr("Already have an account? Log In")
+    onClicked: accountHandlerController_.showLoginView()
+  }
 }

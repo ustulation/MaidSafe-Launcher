@@ -18,9 +18,6 @@
 
 #include "maidsafe/launcher/ui/helpers/main_window.h"
 
-#include <QDebug>
-#include <QDesktopWidget>
-
 namespace maidsafe {
 
 namespace launcher {
@@ -29,46 +26,58 @@ namespace ui {
 
 namespace helpers {
 
-MainWindow::MainWindow(QWindow* parent)
-    : QQuickView{parent} {
-  connect(this,
-          SIGNAL(statusChanged(QQuickView::Status)),
-          this,
-          SLOT(StatusChanged(const QQuickView::Status)),
-          Qt::UniqueConnection);
+MainWindow::MainWindow(QWindow* parent) : QQuickView{parent} {
+  connect(this, SIGNAL(statusChanged(QQuickView::Status)), this,
+          SLOT(StatusChanged(const QQuickView::Status)), Qt::UniqueConnection);
 
   setResizeMode(QQuickView::SizeRootObjectToView);
+  setFlags(Qt::FramelessWindowHint);
 }
 
-MainWindow::~MainWindow() = default;
+MainWindow::~MainWindow() noexcept = default;
 
-void MainWindow::CenterToScreen() {
+void MainWindow::centerToScreen() {
   auto screen_width(QDesktopWidget{}.screen()->width());
   auto screen_height(QDesktopWidget{}.screen()->height());
   setGeometry(screen_width / 2 - width() / 2, screen_height / 2 - height() / 2, width(), height());
 }
 
+void MainWindow::setWindowSize(const int width, const int height) {
+  setWidth(width);
+  setHeight(height);
+}
+
+void MainWindow::changeWindowPosition(int deltaX, int deltaY) {
+  setPosition(x() + deltaX, y() + deltaY);
+}
+
+void MainWindow::changeWindowSize(int deltaX, int deltaY) {
+  setWidth(width() + deltaX);
+  setHeight(height() + deltaY);
+}
+
 void MainWindow::StatusChanged(const QQuickView::Status status) {
+  qDebug() << "QML Loading Status:";
   switch (status) {
     case QQuickView::Null:
       qDebug() << "Status: Null.";
-//      LOG() << "Status: Null.";
+      //      LOG() << "Status: Null.";
       break;
     case QQuickView::Ready:
       qDebug() << "Status: Ready.";
-//      LOG() << "Status: Ready.";
+      //      LOG() << "Status: Ready.";
       break;
     case QQuickView::Loading:
       qDebug() << "Status: Loading.";
-//      LOG() << "Status: Loading.";
+      //      LOG() << "Status: Loading.";
       break;
     case QQuickView::Error:
       qDebug() << "Status: ERROR.";
-//      LOG() << "Status: ERROR.";
+      //      LOG() << "Status: ERROR.";
       break;
     default:
       qDebug() << "Status: Unknown.";
-//      LOG() << "Status: Unknown.";
+      //      LOG() << "Status: Unknown.";
       break;
   }
 }

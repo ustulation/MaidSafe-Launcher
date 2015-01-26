@@ -16,22 +16,17 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
 
-namespace maidsafe {
+MouseArea {
+  id: dragMainWindow
+  objectName: "dragMainWindow"
 
-namespace launcher {
+  property real prevMouseX
+  property real prevMouseY
 
-namespace ui {
-
-namespace models {
-
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
-
-}  // namespace models
-
-}  // namespace ui
-
-}  // namespace launcher
-
-}  // namespace maidsafe
+  acceptedButtons: Qt.LeftButton
+  onPressed:  { prevMouseX = mouseX; prevMouseY = mouseY; cursorShape = Qt.ClosedHandCursor }
+  onReleased: { cursorShape = Qt.ArrowCursor }
+  onPositionChanged: { mainWindow_.changeWindowPosition(mouseX - prevMouseX, mouseY - prevMouseY) }
+}

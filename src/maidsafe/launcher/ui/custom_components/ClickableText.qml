@@ -16,22 +16,25 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
 
-namespace maidsafe {
+MouseArea {
+  id: clickableText
+  objectName: "clickableText"
 
-namespace launcher {
+  property alias label: customLabel
 
-namespace ui {
+  height: customLabel.implicitHeight
+  width: customLabel.implicitWidth
 
-namespace models {
+  hoverEnabled: true
+  acceptedButtons: Qt.LeftButton
+  onEntered: cursorShape = Qt.PointingHandCursor
 
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
+  CustomLabel {
+    id: customLabel
+    objectName: "customLabel"
 
-}  // namespace models
-
-}  // namespace ui
-
-}  // namespace launcher
-
-}  // namespace maidsafe
+    anchors.centerIn: parent
+  }
+}

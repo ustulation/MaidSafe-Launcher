@@ -30,7 +30,7 @@
 
 namespace ms = maidsafe::launcher::ui;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   ms::helpers::Application application(argc, argv);
   auto log_options(maidsafe::log::Logging::Instance().Initialise(argc, argv));
 
@@ -49,12 +49,13 @@ int main(int argc, char *argv[]) {
     ms::controllers::MainController main_controller;
     application.SetErrorHandler(main_controller);
     return application.exec();
-  } catch(const std::exception& ex) {
+  }
+  catch (const std::exception& ex) {
     std::cerr << "STD Exception Caught: " << ex.what();
     return -1;
-  } catch(...) {
+  }
+  catch (...) {
     std::cerr << "Default Exception Caught";
     return -1;
   }
 }
-

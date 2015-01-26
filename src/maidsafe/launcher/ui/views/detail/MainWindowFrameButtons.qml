@@ -16,22 +16,49 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
+import QtQuick.Controls 1.3
+import QtQuick.Controls.Styles 1.3
 
-namespace maidsafe {
+Row {
+  id: frameButtonsRow
+  objectName: "frameButtonsRow"
 
-namespace launcher {
+  readonly property int buttonWidth: 15
+  readonly property int buttonHeight: 15
+  readonly property int buttonRadius: 7
 
-namespace ui {
+  spacing: 5
 
-namespace models {
+  Button {
+    id: closeButton
+    objectName: "closeButton"
 
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
+    onClicked: Qt.quit()
 
-}  // namespace models
+    style: ButtonStyle {
+      background: Rectangle {
+        implicitHeight: frameButtonsRow.buttonHeight
+        implicitWidth: frameButtonsRow.buttonWidth
+        radius: frameButtonsRow.buttonRadius
+        color: "red"
+      }
+    }
+  }
 
-}  // namespace ui
+  Button {
+    id: minimizeButton
+    objectName: "minimizeButton"
 
-}  // namespace launcher
+    onClicked: mainWindow_.showMinimized()
 
-}  // namespace maidsafe
+    style: ButtonStyle {
+      background: Rectangle {
+        implicitHeight: frameButtonsRow.buttonHeight
+        implicitWidth: frameButtonsRow.buttonWidth
+        radius: frameButtonsRow.buttonRadius
+        color: "lightgreen"
+      }
+    }
+  }
+}

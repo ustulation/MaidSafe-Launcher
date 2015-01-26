@@ -16,22 +16,47 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
+import QtQuick.Controls 1.3
+import QtQuick.Controls.Styles 1.3
 
-namespace maidsafe {
+Button {
+  id: buttonControl
+  objectName: "buttonControl"
 
-namespace launcher {
+  Keys.onEnterPressed: clicked();
+  Keys.onSpacePressed: clicked();
+  Keys.onReturnPressed: clicked();
 
-namespace ui {
+  style: ButtonStyle {
+    id: buttonStyle
+    objectName: "buttonStyle"
 
-namespace models {
+    background: Rectangle {
+      id: backgroundRect
+      objectName: "backgroundRect"
 
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
+      implicitHeight: globalProperties.textFieldHeight
+      implicitWidth: globalProperties.textFieldWidth
+      radius: globalProperties.textFieldRadius
+      antialiasing: true
 
-}  // namespace models
+      color: control.pressed ?
+               globalBrushes.buttonPressedBlue
+             :
+               control.hovered ?
+                 globalBrushes.buttonHoveredBlue
+               :
+                 globalBrushes.buttonDefaultBlue
+    }
 
-}  // namespace ui
+    label: CustomLabel {
+      id: buttonLabel
+      objectName: "buttonLabel"
 
-}  // namespace launcher
-
-}  // namespace maidsafe
+      text: control.text
+      verticalAlignment: Qt.AlignVCenter
+      horizontalAlignment: Qt.AlignHCenter
+    }
+  }
+}

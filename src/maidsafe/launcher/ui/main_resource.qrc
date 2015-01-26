@@ -12,5 +12,14 @@
         <file>resources/images/create_tick.png</file>
         <file>resources/images/login_bg.png</file>
         <file>custom_components/CustomTextField.qml</file>
+        <file>views/detail/ResizeMainWindowHelper.qml</file>
+        <file>views/detail/MainWindowFrameButtons.qml</file>
+        <file>views/detail/DragMainWindowHelper.qml</file>
+        <file>views/detail/GlobalProperties.qml</file>
+        <file>views/detail/GlobalBrushes.qml</file>
+        <file>custom_components/BlueButton.qml</file>
+        <file>custom_components/CustomLabel.qml</file>
+        <file>custom_components/CustomText.qml</file>
+        <file>custom_components/ClickableText.qml</file>
     </qresource>
 </RCC>

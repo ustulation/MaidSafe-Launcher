@@ -22,7 +22,6 @@
 #include <memory>
 
 #include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
-#include "maidsafe/launcher/ui/helpers/main_window.h"
 #include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
 
 namespace maidsafe {
@@ -31,7 +30,12 @@ namespace launcher {
 
 namespace ui {
 
-namespace models { class APIModel; }  // namespace models
+namespace models {
+class APIModel;
+}  // namespace models
+namespace helpers {
+class MainWindow;
+}  // namespace helpers
 
 namespace controllers {
 
@@ -42,15 +46,19 @@ class MainController : public QObject {
   Q_PROPERTY(MainViews currentView READ currentView NOTIFY currentViewChanged FINAL)
 
  public:
-  enum MainViews {
-    HandleAccount,
-  };
+  enum MainViews { HandleAccount, };
 
   explicit MainController(QObject* parent = 0);
+  ~MainController() noexcept override;
 
   MainViews currentView() const;
   void SetCurrentView(const MainViews new_current_view);
   Q_SIGNAL void currentViewChanged(MainViews arg);
+
+  MainController(MainController&&) = delete;
+  MainController(const MainController&) = delete;
+  MainController& operator=(MainController&&) = delete;
+  MainController& operator=(const MainController&) = delete;
 
  protected:
   bool eventFilter(QObject* object, QEvent* event);
@@ -62,6 +70,7 @@ class MainController : public QObject {
  private:
   void RegisterQmlTypes() const;
   void RegisterQtMetaTypes() const;
+  void SetupConnections() const;
   void SetContexProperties();
 
   // AccountHandling
@@ -69,7 +78,7 @@ class MainController : public QObject {
   Q_SIGNAL void InvokeAccountHandlerController();
 
  private:
-  std::unique_ptr<helpers::MainWindow> main_window_{new helpers::MainWindow};
+  std::unique_ptr<helpers::MainWindow> main_window_;
   models::APIModel* api_model_{nullptr};
   QObject* account_handler_controller_{nullptr};
 
@@ -85,4 +94,3 @@ class MainController : public QObject {
 }  // namespace maidsafe
 
 #endif  // MAIDSAFE_LAUNCHER_UI_CONTROLLERS_MAIN_CONTROLLER_H_
-

@@ -16,22 +16,19 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
 
-namespace maidsafe {
+QtObject {
+  id: globalProperties
+  objectName: "globalProperties"
 
-namespace launcher {
+  readonly property int fontPixelSize: 18
+  readonly property int textFieldWidth: 320
+  readonly property int textFieldHeight: 35
+  readonly property int textFieldRadius: 5
+  readonly property int textFieldVerticalSpacing: 15
 
-namespace ui {
-
-namespace models {
-
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
-
-}  // namespace models
-
-}  // namespace ui
-
-}  // namespace launcher
-
-}  // namespace maidsafe
+  readonly property int bottomMargin: 50
+  readonly property int loginBottomMargin: 130
+  readonly property int createAccountBottomMargin: 150
+}

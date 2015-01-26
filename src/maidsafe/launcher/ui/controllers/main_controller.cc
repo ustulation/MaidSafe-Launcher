@@ -19,8 +19,7 @@
 #include "maidsafe/launcher/ui/controllers/main_controller.h"
 
 #include "maidsafe/launcher/ui/controllers/account_handler_controller.h"
-#include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
-#include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
+#include "maidsafe/launcher/ui/helpers/main_window.h"
 #include "maidsafe/launcher/ui/models/api_model.h"
 
 namespace maidsafe {
@@ -31,25 +30,21 @@ namespace ui {
 
 namespace controllers {
 
-MainController::MainController(QObject* parent)
-    : QObject{parent},
-      api_model_{new models::APIModel{this}},
-      account_handler_controller_{new AccountHandlerController{*main_window_, this}} {
+MainController::MainController(QObject* parent) : QObject{parent} {
   QTimer::singleShot(0, this, SLOT(EventLoopStarted()));
 }
 
+MainController::~MainController() noexcept = default;
+
 void MainController::EventLoopStarted() {
-  connect(this, SIGNAL(InvokeAccountHandlerController()),
-          account_handler_controller_, SLOT(Invoke()),
-          Qt::UniqueConnection);
+  main_window_.reset(new helpers::MainWindow);
+  api_model_ = new models::APIModel{this};
+  account_handler_controller_ = new AccountHandlerController{*main_window_, this};
 
   RegisterQtMetaTypes();
   RegisterQmlTypes();
   SetContexProperties();
-
-  connect(this, SIGNAL(InvokeAccountHandlerController()),
-          account_handler_controller_, SLOT(Invoke()),
-          Qt::UniqueConnection);
+  SetupConnections();
 
   installEventFilter(this);
 
@@ -83,23 +78,33 @@ void MainController::UnhandledException() {
 
 void MainController::RegisterQmlTypes() const {
   qmlRegisterUncreatableType<MainController>(
-        "MainController",
-        1, 0,
-        "MainController",
-        "Error!! Attempting to access uncreatable type - MainController");
+      "MainController", 1, 0, "MainController",
+      "Error!! Attempting to access uncreatable type - MainController");
   qmlRegisterUncreatableType<AccountHandlerController>(
-        "AccountHandler",
-        1, 0,
-        "AccountHandlerController",
-        "Error!! Attempting to access uncreatable type - AccountHandlerController");
+      "AccountHandler", 1, 0, "AccountHandlerController",
+      "Error!! Attempting to access uncreatable type - AccountHandlerController");
 }
 
-void MainController::RegisterQtMetaTypes() const { }
+void MainController::RegisterQtMetaTypes() const {}
+
+void MainController::SetupConnections() const {
+  Q_ASSERT_X(connect(this, SIGNAL(InvokeAccountHandlerController()), account_handler_controller_,
+                     SLOT(Invoke()), Qt::UniqueConnection),
+             "Connection Failure", "Account Handler Controller must implement slot void Invoke()");
+  Q_ASSERT_X(connect(account_handler_controller_, SIGNAL(LoginCompleted()), this,
+                     SLOT(LoginCompleted()), Qt::UniqueConnection),
+             "Connection Failure",
+             "Account Handler Controller must implement signal void LoginCompleted()");
+  Q_ASSERT_X(
+      connect(main_window_->engine(), SIGNAL(quit()), qApp, SLOT(quit()), Qt::UniqueConnection),
+      "Connection Failure", "QQmlEngine::quit() -> qApp::quit()");
+}
 
 void MainController::SetContexProperties() {
   auto root_context(main_window_->rootContext());
-  root_context->setContextProperty("mainController", this);
-  root_context->setContextProperty("accountHandlerController", account_handler_controller_);
+  root_context->setContextProperty("mainController_", this);
+  root_context->setContextProperty("mainWindow_", main_window_.get());
+  root_context->setContextProperty("accountHandlerController_", account_handler_controller_);
 }
 
 
@@ -110,4 +115,3 @@ void MainController::SetContexProperties() {
 }  // namespace launcher
 
 }  // namespace maidsafe
-
