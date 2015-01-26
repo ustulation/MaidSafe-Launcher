@@ -19,13 +19,30 @@
 import QtQuick 2.4
 import AccountHandler 1.0
 
-import "../../custom_components"
-
 Image {
+  id: accountHandlerView
+  objectName: "accountHandlerView"
+
+  Component.onCompleted: {
+    globalWindowResizeHelper.enabled = false
+    mainWindow_.setWindowSize(implicitWidth, implicitHeight)
+  }
+
+  Component.onDestruction: globalWindowResizeHelper.enabled = true
+
   source: "/resources/images/login_bg.png"
 
-  CustomTextField {
-    height: 30
-    width: 100
+  Loader {
+    id: accountHandlerLoader
+    objectName: "accountHandlerLoader"
+
+    anchors.fill: parent
+    source: accountHandlerController_.currentView === AccountHandlerController.CreateAccountView ?
+              "CreateAccount.qml"
+            :
+              accountHandlerController_.currentView === AccountHandlerController.LoginView ?
+                "Login.qml"
+              :
+                ""
   }
 }

@@ -16,7 +16,9 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
+// #include "maidsafe/launcher/launcher.h"
 #include "maidsafe/launcher/ui/models/account_handler_model.h"
+#include "maidsafe/launcher/ui/helpers/raii_dispatcher.h"
 
 namespace maidsafe {
 
@@ -26,8 +28,35 @@ namespace ui {
 
 namespace models {
 
-AccountHandlerModel::AccountHandlerModel(QObject* parent)
-    : QObject{parent} {}
+AccountHandlerModel::AccountHandlerModel(QObject* parent) : QObject{parent} {}
+
+AccountHandlerModel::~AccountHandlerModel() noexcept = default;
+
+std::unique_ptr<Launcher> AccountHandlerModel::Login(const QString& pin, const QString& keyword,
+                                                     const QString& password) {
+  helpers::RAIIDispatcher sig{[this] { emit LoginResultAvailable(); }};
+  (void)sig;
+  //  return Launcher::Login(pin.toStdString(), keyword.toStdString(), password.toStdString());
+  std::unique_ptr<Launcher> launcher{new Launcher};
+  return std::move(launcher);
+  (void)pin;
+  (void)keyword;
+  (void)password;
+}
+
+std::unique_ptr<Launcher> AccountHandlerModel::CreateAccount(const QString& pin,
+                                                             const QString& keyword,
+                                                             const QString& password) {
+  helpers::RAIIDispatcher sig{[this] { emit CreateAccountResultAvailable(); }};
+  (void)sig;
+  //  return Launcher::CreateAccount(pin.toStdString(), keyword.toStdString(),
+  // password.toStdString());
+  std::unique_ptr<Launcher> launcher{new Launcher};
+  return std::move(launcher);
+  (void)pin;
+  (void)keyword;
+  (void)password;
+}
 
 }  // namespace models
 
@@ -36,5 +65,3 @@ AccountHandlerModel::AccountHandlerModel(QObject* parent)
 }  // namespace launcher
 
 }  // namespace maidsafe
-
-

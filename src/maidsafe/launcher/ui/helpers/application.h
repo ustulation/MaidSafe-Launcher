@@ -33,7 +33,9 @@ namespace launcher {
 
 namespace ui {
 
-namespace controllers { class MainController; }  // namespace controllers
+namespace controllers {
+class MainController;
+}  // namespace controllers
 
 namespace helpers {
 
@@ -77,4 +79,3 @@ class Application : public QApplication {
 }  // namespace maidsafe
 
 #endif  // MAIDSAFE_LAUNCHER_UI_HELPERS_APPLICATION_H_
-

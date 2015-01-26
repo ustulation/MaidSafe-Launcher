@@ -19,6 +19,8 @@
 #ifndef MAIDSAFE_LAUNCHER_UI_MODELS_ACCOUNT_HANDLER_MODEL_H_
 #define MAIDSAFE_LAUNCHER_UI_MODELS_ACCOUNT_HANDLER_MODEL_H_
 
+#include <memory>
+
 #include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
 #include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
 
@@ -26,13 +28,29 @@ namespace maidsafe {
 
 namespace launcher {
 
+struct Launcher {
+  int a{999};
+};
+
 namespace ui {
 
 namespace models {
 
 class AccountHandlerModel : public QObject {
+  Q_OBJECT
+
  public:
   explicit AccountHandlerModel(QObject* parent = nullptr);
+  ~AccountHandlerModel() noexcept override;
+
+  std::unique_ptr<Launcher> Login(const QString& pin, const QString& keyword,
+                                  const QString& password);
+  std::unique_ptr<Launcher> CreateAccount(const QString& pin, const QString& keyword,
+                                          const QString& password);
+
+ signals: // NOLINT - Spandan
+  void LoginResultAvailable();
+  void CreateAccountResultAvailable();
 };
 
 }  // namespace models

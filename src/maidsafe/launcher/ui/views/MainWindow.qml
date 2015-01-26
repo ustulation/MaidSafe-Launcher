@@ -17,20 +17,49 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
+import QtQuick.Controls 1.3
+import QtQuick.Controls.Styles 1.3
+
 import MainController 1.0
+import "./detail"
 
 Item {
-  id: rootMainWindowItem
-  objectName: "rootMainWindowItem"
+  id: mainWindowItem
+  objectName: "mainWindowItem"
 
-  Loader {
-    id: rootLoader
-    objectName: "rootLoader"
+  FontLoader       { id: globalFontFamily; name      : "OpenSans"         }
+  GlobalBrushes    { id: globalBrushes;    objectName: "globalBrushes"    }
+  GlobalProperties { id: globalProperties; objectName: "globalProperties" }
+
+  DragMainWindowHelper {
+    id: dragMainWindowHelper
+    objectName: "dragMainWindowHelper"
 
     anchors.fill: parent
-    source: mainController.currentView === MainController.HandleAccount ?
+  }
+
+  Loader {
+    id: mainWindowLoader
+    objectName: "mainWindowLoader"
+
+    anchors.fill: parent
+    source: mainController_.currentView === MainController.HandleAccount ?
               "account_handling/AccountHandlerView.qml"
             :
               ""
+  }
+
+  ResizeMainWindowHelper {
+    id: globalWindowResizeHelper
+    objectName: "globalWindowResizeHelper"
+
+    anchors.fill: parent
+  }
+
+  MainWindowFrameButtons {
+    id: mainWindowFrameButtons
+    objectName: "mainWindowFrameButtons"
+
+    anchors { top: parent.top; left: parent.left; margins: 5 }
   }
 }

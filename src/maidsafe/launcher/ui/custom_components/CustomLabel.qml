@@ -16,22 +16,13 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/api_model.h"
+import QtQuick 2.4
+import QtQuick.Controls 1.3
 
-namespace maidsafe {
+Label {
+  id: customLabel
+  objectName: "customLabel"
 
-namespace launcher {
-
-namespace ui {
-
-namespace models {
-
-APIModel::APIModel(QObject* parent) : QObject(parent) {}
-
-}  // namespace models
-
-}  // namespace ui
-
-}  // namespace launcher
-
-}  // namespace maidsafe
+  color: globalBrushes.labelDefault
+  font { pixelSize: globalProperties.fontPixelSize; family: globalFontFamily.name }
+}
