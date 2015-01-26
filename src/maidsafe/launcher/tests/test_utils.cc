@@ -62,14 +62,14 @@ DirectoryInfo CreateRandomDirectoryInfo() {
       RandomAlphaNumericString((RandomUint32() % 10) + 10),
       drive::ParentId(drive::DirectoryId(RandomString(crypto::SHA512::DIGESTSIZE))),
       drive::DirectoryId(RandomString(crypto::SHA512::DIGESTSIZE)),
-      static_cast<DirectoryInfo::AccessRights>(RandomUint32() % 3));
+      static_cast<DirectoryInfo::AccessRights>((RandomUint32() % 2) + 1));
 }
 
 AppDetails CreateRandomAppDetails() {
   AppDetails app;
-  app.name = RandomAlphaNumericString((RandomUint32() % 10) + 10);
-  app.path = RandomAlphaNumericString((RandomUint32() % 10) + 10);
-  app.args = RandomAlphaNumericString((RandomUint32() % 10) + 10);
+  app.name = RandomAlphaNumericString((RandomUint32() % 10) + 30);
+  app.path = RandomAlphaNumericString((RandomUint32() % 246) + 10);
+  app.args = RandomAlphaNumericString(RandomUint32() % 10);
   int count = (RandomUint32() % 10) + 1;
   for (int i = 0; i < count; ++i)
     app.permitted_dirs.insert(CreateRandomDirectoryInfo());
@@ -116,10 +116,13 @@ testing::AssertionResult Equals(const AppDetails& expected, const AppDetails& ac
         switch (dir.access_rights) {
           case DirectoryInfo::AccessRights::kNone:
             output += "        access_rights: kNone\n";
+            break;
           case DirectoryInfo::AccessRights::kReadOnly:
             output += "        access_rights: kReadOnly\n";
+            break;
           case DirectoryInfo::AccessRights::kReadWrite:
             output += "        access_rights: kReadWrite\n";
+            break;
           default:
             BOOST_THROW_EXCEPTION(MakeError(CommonErrors::invalid_parameter));
         }
