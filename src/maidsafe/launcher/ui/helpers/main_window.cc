@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWindow* parent) : QQuickView{parent} {
   setFlags(Qt::FramelessWindowHint);
 }
 
-MainWindow::~MainWindow() noexcept = default;
+MainWindow::~MainWindow() MAIDSAFE_NOEXCEPT = default;
 
 void MainWindow::centerToScreen() {
   auto screen_width(QDesktopWidget{}.screen()->width());

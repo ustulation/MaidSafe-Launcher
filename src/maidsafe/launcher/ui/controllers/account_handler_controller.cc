@@ -17,8 +17,9 @@
     use of the MaidSafe Software.                                                                 */
 
 #include "maidsafe/launcher/ui/controllers/account_handler_controller.h"
-#include "maidsafe/launcher/ui/models/account_handler_model.h"
+
 #include "maidsafe/launcher/ui/helpers/main_window.h"
+#include "maidsafe/launcher/ui/models/account_handler_model.h"
 
 namespace maidsafe {
 
@@ -44,7 +45,7 @@ AccountHandlerController::AccountHandlerController(helpers::MainWindow& main_win
              "Account Handler Model must implement signal void CreateAccountResultAvailable()");
 }
 
-AccountHandlerController::~AccountHandlerController() noexcept {
+AccountHandlerController::~AccountHandlerController() MAIDSAFE_NOEXCEPT {
   if (future_.valid()) {
     future_.wait();
   }
@@ -69,7 +70,9 @@ void AccountHandlerController::login(const QString& pin, const QString& keyword,
   }
 }
 
-void AccountHandlerController::showLoginView() { setCurrentView(LoginView); }
+void AccountHandlerController::showLoginView() {
+  setCurrentView(LoginView);
+}
 
 void AccountHandlerController::createAccount(const QString& pin, const QString& keyword,
                                              const QString& password) {
@@ -80,7 +83,9 @@ void AccountHandlerController::createAccount(const QString& pin, const QString& 
   }
 }
 
-void AccountHandlerController::showCreateAccountView() { setCurrentView(CreateAccountView); }
+void AccountHandlerController::showCreateAccountView() {
+  setCurrentView(CreateAccountView);
+}
 
 void AccountHandlerController::Invoke() {
   main_window_.centerToScreen();
@@ -91,7 +96,7 @@ void AccountHandlerController::LoginResultAvailable() {
   try {
     auto launcher(future_.get());
     qDebug() << launcher->a;
-    (void)launcher;
+    static_cast<void>(launcher);
   }
   catch (...) {
     qDebug() << "Exception";
@@ -101,7 +106,7 @@ void AccountHandlerController::LoginResultAvailable() {
 void AccountHandlerController::CreateAccountResultAvailable() {
   try {
     auto launcher(future_.get());
-    (void)launcher;
+    static_cast<void>(launcher);
   }
   catch (...) {
   }

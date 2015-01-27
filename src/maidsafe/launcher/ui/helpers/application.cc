@@ -17,6 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 #include "maidsafe/launcher/ui/helpers/application.h"
+
 #include "maidsafe/launcher/ui/controllers/main_controller.h"
 
 namespace maidsafe {

@@ -22,6 +22,8 @@
 #include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
 #include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
 
+#include "maidsafe/common/config.h"
+
 namespace maidsafe {
 
 namespace launcher {
@@ -35,7 +37,7 @@ class MainWindow : public QQuickView {
 
  public:
   explicit MainWindow(QWindow* parent = nullptr);
-  ~MainWindow() noexcept override;
+  ~MainWindow() MAIDSAFE_NOEXCEPT override;
 
   Q_INVOKABLE void centerToScreen();
   Q_INVOKABLE void setWindowSize(const int width, const int height);
