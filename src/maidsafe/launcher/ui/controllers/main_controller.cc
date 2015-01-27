@@ -22,6 +22,8 @@
 #include "maidsafe/launcher/ui/helpers/main_window.h"
 #include "maidsafe/launcher/ui/models/api_model.h"
 
+#include "maidsafe/launcher/ui/models/account_handler_model.h"
+
 namespace maidsafe {
 
 namespace launcher {
@@ -63,7 +65,11 @@ void MainController::SetCurrentView(const MainViews new_current_view) {
   }
 }
 
-void MainController::LoginCompleted() {}
+void MainController::LoginCompleted(Launcher* launcherPtr) {
+  std::unique_ptr<Launcher> launcher{launcherPtr};
+  static_cast<void>(launcher);
+  qDebug() << "main controller:" << launcher->a_;
+}
 
 bool MainController::eventFilter(QObject* object, QEvent* event) {
   if (object == this && event->type() >= QEvent::User && event->type() <= QEvent::MaxUser) {
@@ -93,10 +99,10 @@ void MainController::SetupConnections() const {
   Q_ASSERT_X(connect(this, SIGNAL(InvokeAccountHandlerController()), account_handler_controller_,
                      SLOT(Invoke()), Qt::UniqueConnection),
              "Connection Failure", "Account Handler Controller must implement slot void Invoke()");
-  Q_ASSERT_X(connect(account_handler_controller_, SIGNAL(LoginCompleted()), this,
-                     SLOT(LoginCompleted()), Qt::UniqueConnection),
+  Q_ASSERT_X(connect(account_handler_controller_, SIGNAL(LoginCompleted(Launcher*)), this, // NOLINT - Spandan
+                     SLOT(LoginCompleted(Launcher*)), Qt::UniqueConnection), // NOLINT - Spandan
              "Connection Failure",
-             "Account Handler Controller must implement signal void LoginCompleted()");
+             "Account Handler Controller must implement signal void LoginCompleted(Launcher*)");
   Q_ASSERT_X(
       connect(main_window_->engine(), SIGNAL(quit()), qApp, SLOT(quit()), Qt::UniqueConnection),
       "Connection Failure", "QQmlEngine::quit() -> qApp::quit()");

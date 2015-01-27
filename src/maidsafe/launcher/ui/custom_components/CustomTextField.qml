@@ -24,6 +24,31 @@ TextField {
   id: textField
   objectName: "textField"
 
+  property bool showTickImage: false
+  property bool showErrorImage: false
+  property bool clearAllImagesTextChange: true
+
+  function clearAllImages() { showTickImage = showErrorImage = false }
+
+  onShowTickImageChanged: {
+    if (showTickImage && showErrorImage) {
+      showErrorImage = false
+    }
+  }
+  onShowErrorImageChanged: {
+    if (showErrorImage && showTickImage) {
+      showTickImage = false
+    }
+  }
+  onActiveFocusChanged: {
+    if (activeFocus) {
+      selectAll()
+    }
+  }
+  onTextChanged: {
+    if (clearAllImagesTextChange) { clearAllImages() }
+  }
+
   font { pixelSize: globalProperties.fontPixelSize; family: globalFontFamily.name }
   horizontalAlignment: TextInput.AlignHCenter
   verticalAlignment: TextInput.AlignVCenter
@@ -46,6 +71,24 @@ TextField {
       implicitHeight: globalProperties.textFieldHeight
       implicitWidth: globalProperties.textFieldWidth
       radius: globalProperties.textFieldRadius
+
+      Image {
+        id: tickImage
+        objectName: "tickImage"
+
+        anchors { right: parent.right; rightMargin: 3; verticalCenter: parent.verticalCenter }
+        source: "/resources/images/create_tick.png"
+        visible: textField.showTickImage
+      }
+
+      Image {
+        id: errorImage
+        objectName: "errorImage"
+
+        anchors { right: parent.right; rightMargin: 3; verticalCenter: parent.verticalCenter }
+        source: "/resources/images/create_error.png"
+        visible: textField.showErrorImage
+      }
     }
   }
 }

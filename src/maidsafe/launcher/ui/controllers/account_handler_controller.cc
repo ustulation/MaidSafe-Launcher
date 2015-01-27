@@ -55,7 +55,7 @@ AccountHandlerController::AccountHandlingViews AccountHandlerController::current
   return current_view_;
 }
 
-void AccountHandlerController::setCurrentView(const AccountHandlingViews new_current_view) {
+void AccountHandlerController::SetCurrentView(const AccountHandlingViews new_current_view) {
   if (new_current_view != current_view_) {
     current_view_ = new_current_view;
     emit currentViewChanged(current_view_);
@@ -71,7 +71,7 @@ void AccountHandlerController::login(const QString& pin, const QString& keyword,
 }
 
 void AccountHandlerController::showLoginView() {
-  setCurrentView(LoginView);
+  SetCurrentView(LoginView);
 }
 
 void AccountHandlerController::createAccount(const QString& pin, const QString& keyword,
@@ -84,7 +84,7 @@ void AccountHandlerController::createAccount(const QString& pin, const QString& 
 }
 
 void AccountHandlerController::showCreateAccountView() {
-  setCurrentView(CreateAccountView);
+  SetCurrentView(CreateAccountView);
 }
 
 void AccountHandlerController::Invoke() {
@@ -95,18 +95,16 @@ void AccountHandlerController::Invoke() {
 void AccountHandlerController::LoginResultAvailable() {
   try {
     auto launcher(future_.get());
-    qDebug() << launcher->a;
-    static_cast<void>(launcher);
+    emit LoginCompleted(launcher.release());
   }
   catch (...) {
-    qDebug() << "Exception";
   }
 }
 
 void AccountHandlerController::CreateAccountResultAvailable() {
   try {
     auto launcher(future_.get());
-    static_cast<void>(launcher);
+    emit LoginCompleted(launcher.release());
   }
   catch (...) {
   }

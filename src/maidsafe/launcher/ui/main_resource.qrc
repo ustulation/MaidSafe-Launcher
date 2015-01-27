@@ -21,5 +21,7 @@
         <file>custom_components/CustomLabel.qml</file>
         <file>custom_components/CustomText.qml</file>
         <file>custom_components/ClickableText.qml</file>
+        <file>views/account_handling/detail/CreateAccountUserInputColumn.qml</file>
+        <file>custom_components/FloatingStatusBox.qml</file>
     </qresource>
 </RCC>

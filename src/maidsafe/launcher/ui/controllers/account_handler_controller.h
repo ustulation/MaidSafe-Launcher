@@ -60,7 +60,7 @@ class AccountHandlerController : public QObject {
   AccountHandlerController& operator=(const AccountHandlerController&) = delete;
 
   AccountHandlingViews currentView() const;
-  void setCurrentView(const AccountHandlingViews new_current_view);
+  void SetCurrentView(const AccountHandlingViews new_current_view);
 
   Q_INVOKABLE void login(const QString& pin, const QString& keyword, const QString& password);
   Q_INVOKABLE void showLoginView();
@@ -68,8 +68,8 @@ class AccountHandlerController : public QObject {
                                  const QString& password);
   Q_INVOKABLE void showCreateAccountView();
 
- signals:  // NOLINT - Spandan
-  void LoginCompleted();
+ signals: // NOLINT - Spandan
+  void LoginCompleted(Launcher* launcher);
   void currentViewChanged(AccountHandlingViews arg);
 
  private slots:  // NOLINT - Spandan

@@ -20,30 +20,12 @@ import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
 
+import "./detail"
 import "../../custom_components"
 
-Item {
-  id: createAccountItem
-  objectName: "createAccountItem"
-
-  QtObject {
-    id: dPtr
-    objectName: "dPtr"
-
-    readonly property var tabModel: [qsTr("PIN"), qsTr("Keyword"), qsTr("Password")]
-
-    property int currentTabIndex: 0
-    property string pin: ""
-    property string keyword: ""
-    property string password: ""
-
-    onCurrentTabIndexChanged: {
-      if(currentTabIndex >= tabModel.length) {
-        currentTabIndex = currentTabIndex % tabModel.length
-        accountHandlerController_.login(pin, keyword, password)
-      }
-    }
-  }
+FocusScope {
+  id: createAccountRoot
+  objectName: "createAccountRoot"
 
   Row {
     id: createAccountTabRow
@@ -51,7 +33,7 @@ Item {
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: textFieldsAndButtonColumn.top; bottomMargin: globalProperties.textFieldHeight
+      bottom: userInputLoader.top; bottomMargin: globalProperties.textFieldHeight
     }
 
     spacing: 15
@@ -60,14 +42,16 @@ Item {
       id: tabRepeater
       objectName: "tabRepeater"
 
-      model: dPtr.tabModel
+      property int currentTabIndex: 0
+
+      model: [qsTr("PIN"), qsTr("Keyword"), qsTr("Password")]
 
       delegate: CustomLabel {
         id: tabLabel
         objectName: "tabLabel"
 
         text: modelData
-        color: model.index === dPtr.currentTabIndex ?
+        color: model.index === tabRepeater.currentTabIndex ?
                  globalBrushes.labelSelected
                :
                  globalBrushes.labelNotSelected
@@ -75,40 +59,178 @@ Item {
     }
   }
 
-  Column {
-    id: textFieldsAndButtonColumn
-    objectName: "textFieldsAndButtonColumn"
+  Loader {
+    id: userInputLoader
+    objectName: "userInputLoader"
+
+    property string pin: ""
+    property string keyword: ""
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom; bottomMargin: globalProperties.createAccountBottomMargin
+      bottom: parent.bottom; bottomMargin: globalProperties.createAccountNextButtonBottomMargin
     }
 
-    spacing: globalProperties.textFieldVerticalSpacing
+    focus: true
+    sourceComponent: acceptPINComponent
+    onLoaded: { item.nextFocusItem = showLoginPageLabel; item.focus = true }
+  }
 
-    CustomTextField {
-      id: textFld0
-      objectName: "textFld0"
+  Component {
+    id: acceptPINComponent
 
-      anchors.horizontalCenter: parent.horizontalCenter
-      placeholderText: "Place holder text"
-      echoMode: TextInput.Password
+    CreateAccountUserInputColumn {
+      id: textFieldsAndButtonColumn
+      objectName: "textFieldsAndButtonColumn"
+
+      primaryTextField.placeholderText: qsTr("Choose a 4 digit PIN")
+      confirmationTextField.placeholderText: qsTr("Confirm PIN")
+
+      onPrimaryFieldTabPressed: {
+        if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
+      }
+      onConfirmationFieldTabPressed: {
+        if (confirmationTextField.text !== "") { confirmationTextField.showTickImage = true }
+      }
+
+      primaryTextField.onTextChanged: {
+        if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
+          floatingStatus.visible = false
+        }
+      }
+      confirmationTextField.onTextChanged: {
+        if (floatingStatus.visible && floatingStatus.pointToItem === confirmationTextField) {
+          floatingStatus.visible = false
+        }
+      }
+
+      nextButton.onClicked: {
+        floatingStatus.visible = false
+        clearAllStatusImages()
+        if (!primaryTextField.text.match(/^\d{4}$/)) {
+          primaryTextField.showErrorImage = true
+          floatingStatus.infoText.text = qsTr("PIN must be only and exactly 4 digits")
+          floatingStatus.infoText.color = "#ff0000"
+          floatingStatus.pointToItem = primaryTextField
+          floatingStatus.visible = true
+        }
+        else if (primaryTextField.text !== confirmationTextField.text) {
+          confirmationTextField.showErrorImage = true
+          floatingStatus.infoText.text = qsTr("Entries don't match")
+          floatingStatus.pointToItem = confirmationTextField
+          floatingStatus.visible = true
+        }
+        else {
+          userInputLoader.pin = primaryTextField.text
+          userInputLoader.sourceComponent = acceptKeywordComponent
+          ++tabRepeater.currentTabIndex
+        }
+      }
     }
+  }
 
-    CustomTextField {
-      id: textFld1
-      objectName: "textFld1"
+  Component {
+    id: acceptKeywordComponent
 
-      anchors.horizontalCenter: parent.horizontalCenter
-      placeholderText: "Place holder text"
+    CreateAccountUserInputColumn {
+      id: textFieldsAndButtonColumn
+      objectName: "textFieldsAndButtonColumn"
+
+      primaryTextField.placeholderText: qsTr("Choose a Keyword")
+      confirmationTextField.placeholderText: qsTr("Confirm Keyword")
+
+      onPrimaryFieldTabPressed: {
+        if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
+      }
+      onConfirmationFieldTabPressed: {
+        if (confirmationTextField.text !== "") { confirmationTextField.showTickImage = true }
+      }
+
+      primaryTextField.onTextChanged: {
+        if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
+          floatingStatus.visible = false
+        }
+      }
+      confirmationTextField.onTextChanged: {
+        if (floatingStatus.visible && floatingStatus.pointToItem === confirmationTextField) {
+          floatingStatus.visible = false
+        }
+      }
+
+      nextButton.onClicked: {
+        floatingStatus.visible = false
+        clearAllStatusImages()
+        if (primaryTextField.text === "") {
+          primaryTextField.showErrorImage = true
+          floatingStatus.infoText.text = qsTr("Keyword cannot be left blank")
+          floatingStatus.infoText.color = "#ff0000"
+          floatingStatus.pointToItem = primaryTextField
+          floatingStatus.visible = true
+        }
+        else if (primaryTextField.text !== confirmationTextField.text) {
+          confirmationTextField.showErrorImage = true
+          floatingStatus.infoText.text = qsTr("Entries don't match")
+          floatingStatus.pointToItem = confirmationTextField
+          floatingStatus.visible = true
+        }
+        else {
+          userInputLoader.keyword = primaryTextField.text
+          userInputLoader.sourceComponent = acceptPasswordComponent
+          ++tabRepeater.currentTabIndex
+        }
+      }
     }
+  }
 
-    BlueButton {
-      id: nextButton
-      objectName: "nextButton"
+  Component {
+    id: acceptPasswordComponent
 
-      text: qsTr("Next")
-      onClicked: ++dPtr.currentTabIndex
+    CreateAccountUserInputColumn {
+      id: textFieldsAndButtonColumn
+      objectName: "textFieldsAndButtonColumn"
+
+      primaryTextField.placeholderText: qsTr("Choose a Password")
+      confirmationTextField.placeholderText: qsTr("Confirm Password")
+
+      onPrimaryFieldTabPressed: {
+        if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
+      }
+      onConfirmationFieldTabPressed: {
+        if (confirmationTextField.text !== "") { confirmationTextField.showTickImage = true }
+      }
+
+      primaryTextField.onTextChanged: {
+        if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
+          floatingStatus.visible = false
+        }
+      }
+      confirmationTextField.onTextChanged: {
+        if (floatingStatus.visible && floatingStatus.pointToItem === confirmationTextField) {
+          floatingStatus.visible = false
+        }
+      }
+
+      nextButton.onClicked: {
+        floatingStatus.visible = false
+        clearAllStatusImages()
+        if (primaryTextField.text === "") {
+          primaryTextField.showErrorImage = true
+          floatingStatus.infoText.text = qsTr("Password cannot be left blank")
+          floatingStatus.infoText.color = "#ff0000"
+          floatingStatus.pointToItem = primaryTextField
+          floatingStatus.visible = true
+        }
+        else if (primaryTextField.text !== confirmationTextField.text) {
+          confirmationTextField.showErrorImage = true
+          floatingStatus.infoText.text = qsTr("Entries don't match")
+          floatingStatus.pointToItem = confirmationTextField
+          floatingStatus.visible = true
+        }
+        else {
+          accountHandlerController_.createAccount(userInputLoader.pin, userInputLoader.keyword,
+                                                  primaryTextField.text)
+        }
+      }
     }
   }
 
@@ -118,7 +240,7 @@ Item {
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom; bottomMargin: globalProperties.bottomMargin
+      bottom: parent.bottom; bottomMargin: globalProperties.accountHandlerClickableTextBottomMargin
     }
 
     label.text: qsTr("Already have an account? Log In")

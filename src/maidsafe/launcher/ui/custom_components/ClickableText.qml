@@ -18,23 +18,43 @@
 
 import QtQuick 2.4
 
-MouseArea {
-  id: clickableText
-  objectName: "clickableText"
+FocusScope {
+  id: focusScope
+  objectName: "focusScope"
 
+  signal clicked()
   property alias label: customLabel
+  property alias mouseArea: mouseArea
 
-  height: customLabel.implicitHeight
-  width: customLabel.implicitWidth
+  width: childrenRect.width
+  height: childrenRect.height
 
-  hoverEnabled: true
-  acceptedButtons: Qt.LeftButton
-  onEntered: cursorShape = Qt.PointingHandCursor
+  clip: true
 
-  CustomLabel {
-    id: customLabel
-    objectName: "customLabel"
+  MouseArea {
+    id: mouseArea
+    objectName: "mouseArea"
 
-    anchors.centerIn: parent
+    height: customLabel.implicitHeight
+    width: customLabel.implicitWidth
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+    onClicked: focusScope.clicked()
+
+    CustomLabel {
+      id: customLabel
+      objectName: "customLabel"
+
+      focus: true
+      anchors.centerIn: parent
+      font.underline: mouseArea.containsMouse || activeFocus
+
+      Keys.onEnterPressed: focusScope.clicked()
+      Keys.onSpacePressed: focusScope.clicked()
+      Keys.onReturnPressed: focusScope.clicked()
+    }
   }
 }

@@ -28,7 +28,7 @@ QtObject {
   readonly property int textFieldRadius: 5
   readonly property int textFieldVerticalSpacing: 15
 
-  readonly property int bottomMargin: 50
-  readonly property int loginBottomMargin: 130
-  readonly property int createAccountBottomMargin: 150
+  readonly property int loginButtonBottomMargin: 130
+  readonly property int createAccountNextButtonBottomMargin: 130
+  readonly property int accountHandlerClickableTextBottomMargin: 45
 }

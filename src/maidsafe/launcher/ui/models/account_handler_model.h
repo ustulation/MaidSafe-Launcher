@@ -31,7 +31,7 @@ namespace maidsafe {
 namespace launcher {
 
 struct Launcher {
-  int a{999};
+  int a_{999};
 };
 
 namespace ui {

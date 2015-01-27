@@ -30,6 +30,8 @@ namespace maidsafe {
 
 namespace launcher {
 
+struct Launcher;
+
 namespace ui {
 
 namespace models {
@@ -71,7 +73,7 @@ class MainController : public QObject {
  private slots:  // NOLINT - Viv
   void UnhandledException();
   void EventLoopStarted();
-  void LoginCompleted();
+  void LoginCompleted(Launcher* launcherPtr);
 
  private:
   void RegisterQmlTypes() const;

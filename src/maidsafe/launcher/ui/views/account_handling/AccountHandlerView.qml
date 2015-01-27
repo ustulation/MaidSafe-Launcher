@@ -19,30 +19,70 @@
 import QtQuick 2.4
 import AccountHandler 1.0
 
-Image {
-  id: accountHandlerView
-  objectName: "accountHandlerView"
+import "../../custom_components"
 
-  Component.onCompleted: {
-    globalWindowResizeHelper.enabled = false
-    mainWindow_.setWindowSize(implicitWidth, implicitHeight)
-  }
+FocusScope {
+  id: accountHandlerviewRoot
+  objectName: ""
 
-  Component.onDestruction: globalWindowResizeHelper.enabled = true
+  width: childrenRect.width
+  height: childrenRect.height
 
-  source: "/resources/images/login_bg.png"
+  Image {
+    id: accountHandlerView
+    objectName: "accountHandlerView"
 
-  Loader {
-    id: accountHandlerLoader
-    objectName: "accountHandlerLoader"
+    Component.onCompleted: {
+      globalWindowResizeHelper.enabled = false
+      mainWindow_.setWindowSize(implicitWidth, implicitHeight)
+    }
 
-    anchors.fill: parent
-    source: accountHandlerController_.currentView === AccountHandlerController.CreateAccountView ?
-              "CreateAccount.qml"
-            :
-              accountHandlerController_.currentView === AccountHandlerController.LoginView ?
-                "Login.qml"
+    Component.onDestruction: globalWindowResizeHelper.enabled = true
+
+    source: "/resources/images/login_bg.png"
+
+    CustomText {
+      id: placeHolderTextFirstLine
+      objectName: "placeHolderTextFirstLine"
+
+      anchors {
+        horizontalCenter: parent.horizontalCenter; bottom: placeHolderTextSecondLine.top;
+        bottomMargin: 5
+      }
+
+      font { pixelSize: 45 }
+      text: qsTr("SAFE")
+      z: 1
+    }
+
+    CustomText {
+      id: placeHolderTextSecondLine
+      objectName: "placeHolderTextSecondLine"
+
+      anchors {
+        horizontalCenter: parent.horizontalCenter; bottom: parent.bottom;
+        bottomMargin: 375
+      }
+
+      font { pixelSize: 45; family: globalFontFamily.name }
+      text: qsTr("App Launcher")
+      z: 1
+    }
+
+    Loader {
+      id: accountHandlerLoader
+      objectName: "accountHandlerLoader"
+
+      anchors.fill: parent
+      source: accountHandlerController_.currentView === AccountHandlerController.CreateAccountView ?
+                "CreateAccount.qml"
               :
-                ""
+                accountHandlerController_.currentView === AccountHandlerController.LoginView ?
+                  "Login.qml"
+                :
+                  ""
+      focus: true
+      onLoaded: item.focus = true
+    }
   }
 }
