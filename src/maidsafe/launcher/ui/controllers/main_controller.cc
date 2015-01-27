@@ -22,6 +22,7 @@
 #include "maidsafe/launcher/ui/helpers/main_window.h"
 #include "maidsafe/launcher/ui/models/api_model.h"
 
+// TODO(Spandan) remove when fake Launcher is removed
 #include "maidsafe/launcher/ui/models/account_handler_model.h"
 
 namespace maidsafe {
@@ -30,8 +31,6 @@ namespace launcher {
 
 namespace ui {
 
-namespace controllers {
-
 MainController::MainController(QObject* parent) : QObject{parent} {
   QTimer::singleShot(0, this, SLOT(EventLoopStarted()));
 }
@@ -39,8 +38,8 @@ MainController::MainController(QObject* parent) : QObject{parent} {
 MainController::~MainController() MAIDSAFE_NOEXCEPT = default;
 
 void MainController::EventLoopStarted() {
-  main_window_.reset(new helpers::MainWindow);
-  api_model_ = new models::APIModel{this};
+  main_window_.reset(new MainWindow);
+  api_model_ = new APIModel{this};
   account_handler_controller_ = new AccountHandlerController{*main_window_, this};
 
   RegisterQtMetaTypes();
@@ -114,9 +113,6 @@ void MainController::SetContexProperties() {
   root_context->setContextProperty("mainWindow_", main_window_.get());
   root_context->setContextProperty("accountHandlerController_", account_handler_controller_);
 }
-
-
-}  // namespace controllers
 
 }  // namespace ui
 

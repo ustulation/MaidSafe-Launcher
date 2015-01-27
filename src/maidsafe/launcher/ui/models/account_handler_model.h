@@ -36,8 +36,6 @@ struct Launcher {
 
 namespace ui {
 
-namespace models {
-
 class AccountHandlerModel : public QObject {
   Q_OBJECT
 
@@ -54,8 +52,6 @@ class AccountHandlerModel : public QObject {
   void LoginResultAvailable();
   void CreateAccountResultAvailable();
 };
-
-}  // namespace models
 
 }  // namespace ui
 

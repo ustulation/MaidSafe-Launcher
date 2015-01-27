@@ -33,11 +33,7 @@ namespace launcher {
 
 namespace ui {
 
-namespace controllers {
 class MainController;
-}  // namespace controllers
-
-namespace helpers {
 
 class ExceptionEvent : public QEvent {
  public:
@@ -58,19 +54,17 @@ class Application : public QApplication {
   QStringList AvailableTranslations();
   void SwitchLanguage(QString language);
   virtual bool notify(QObject* receiver, QEvent* event);
-  void SetErrorHandler(boost::optional<controllers::MainController&> handler_object);
+  void SetErrorHandler(boost::optional<MainController&> handler_object);
   bool IsUniqueInstance();
 
  private:
   void CreateTranslators();
 
-  boost::optional<controllers::MainController&> handler_object_;
+  boost::optional<MainController&> handler_object_;
   QMap<QString, QTranslator*> translators_;
   QTranslator* current_translator_;
   QSharedMemory shared_memory_;
 };
-
-}  // namespace helpers
 
 }  // namespace ui
 

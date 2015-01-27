@@ -27,16 +27,12 @@ namespace launcher {
 
 namespace ui {
 
-namespace helpers {
-
 struct RAIIDispatcher {
   using Callable = std::function<void()>;
   explicit RAIIDispatcher(const Callable& c) : c_{c} {}
   ~RAIIDispatcher() { c_(); }
   Callable c_;
 };
-
-}  // namespace helpers
 
 }  // namespace ui
 

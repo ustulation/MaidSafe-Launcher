@@ -24,11 +24,7 @@ namespace launcher {
 
 namespace ui {
 
-namespace models {
-
 APIModel::APIModel(QObject* parent) : QObject(parent) {}
-
-}  // namespace models
 
 }  // namespace ui
 

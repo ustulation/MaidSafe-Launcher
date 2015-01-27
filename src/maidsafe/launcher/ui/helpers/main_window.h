@@ -30,8 +30,6 @@ namespace launcher {
 
 namespace ui {
 
-namespace helpers {
-
 class MainWindow : public QQuickView {
   Q_OBJECT
 
@@ -47,8 +45,6 @@ class MainWindow : public QQuickView {
  private slots:  // NOLINT - Viv
   void StatusChanged(const QQuickView::Status status);
 };
-
-}  // namespace helpers
 
 }  // namespace ui
 

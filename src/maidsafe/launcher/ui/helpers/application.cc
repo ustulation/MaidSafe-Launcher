@@ -26,8 +26,6 @@ namespace launcher {
 
 namespace ui {
 
-namespace helpers {
-
 ExceptionEvent::ExceptionEvent(const QString& exception_message, Type type)
     : QEvent(type), exception_message_(exception_message) {}
 
@@ -69,7 +67,7 @@ bool Application::notify(QObject* receiver, QEvent* event) {
   return false;
 }
 
-void Application::SetErrorHandler(boost::optional<controllers::MainController&> handler_object) {
+void Application::SetErrorHandler(boost::optional<MainController&> handler_object) {
   if (handler_object)
     handler_object_ = handler_object;
 }
@@ -92,8 +90,6 @@ void Application::CreateTranslators() {
     translators_.insert(language, translator);
   }
 }
-
-}  // namespace helpers
 
 }  // namespace ui
 

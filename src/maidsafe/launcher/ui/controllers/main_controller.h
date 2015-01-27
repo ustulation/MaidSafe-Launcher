@@ -34,14 +34,8 @@ struct Launcher;
 
 namespace ui {
 
-namespace models {
 class APIModel;
-}  // namespace models
-namespace helpers {
 class MainWindow;
-}  // namespace helpers
-
-namespace controllers {
 
 class MainController : public QObject {
   Q_OBJECT
@@ -81,14 +75,12 @@ class MainController : public QObject {
   void SetupConnections() const;
   void SetContexProperties();
 
-  std::unique_ptr<helpers::MainWindow> main_window_;
-  models::APIModel* api_model_{ nullptr };
+  std::unique_ptr<MainWindow> main_window_;
+  APIModel* api_model_{ nullptr };
   QObject* account_handler_controller_{ nullptr };
 
   MainViews current_view_{ HandleAccount };
 };
-
-}  // namespace controllers
 
 }  // namespace ui
 

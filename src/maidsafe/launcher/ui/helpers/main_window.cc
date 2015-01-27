@@ -24,8 +24,6 @@ namespace launcher {
 
 namespace ui {
 
-namespace helpers {
-
 MainWindow::MainWindow(QWindow* parent) : QQuickView{parent} {
   connect(this, SIGNAL(statusChanged(QQuickView::Status)), this,
           SLOT(StatusChanged(const QQuickView::Status)), Qt::UniqueConnection);
@@ -81,8 +79,6 @@ void MainWindow::StatusChanged(const QQuickView::Status status) {
       break;
   }
 }
-
-}  // namespace helpers
 
 }  // namespace ui
 

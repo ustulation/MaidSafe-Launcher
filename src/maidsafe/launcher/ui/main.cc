@@ -31,7 +31,7 @@
 namespace ms = maidsafe::launcher::ui;
 
 int main(int argc, char* argv[]) {
-  ms::helpers::Application application(argc, argv);
+  ms::Application application(argc, argv);
   auto log_options(maidsafe::log::Logging::Instance().Initialise(argc, argv));
 
 #ifdef MAIDSAFE_WIN32
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
   application.setApplicationName("SAFE App Launcher");
 
   try {
-    ms::controllers::MainController main_controller;
+    ms::MainController main_controller;
     application.SetErrorHandler(main_controller);
     return application.exec();
   }

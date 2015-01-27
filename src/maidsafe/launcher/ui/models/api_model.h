@@ -28,16 +28,12 @@ namespace launcher {
 
 namespace ui {
 
-namespace models {
-
 class APIModel : public QObject {
   Q_OBJECT
 
  public:
   explicit APIModel(QObject* parent = nullptr);
 };
-
-}  // namespace models
 
 }  // namespace ui
 

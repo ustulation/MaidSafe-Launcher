@@ -34,14 +34,8 @@ struct Launcher;
 
 namespace ui {
 
-namespace models {
 class AccountHandlerModel;
-}  // namespace models
-namespace helpers {
 class MainWindow;
-}  // namespace helpers
-
-namespace controllers {
 
 class AccountHandlerController : public QObject {
   Q_OBJECT
@@ -52,7 +46,7 @@ class AccountHandlerController : public QObject {
  public:
   enum AccountHandlingViews { LoginView, CreateAccountView, };
 
-  AccountHandlerController(helpers::MainWindow& main_window, QObject* parent);
+  AccountHandlerController(MainWindow& main_window, QObject* parent);
   ~AccountHandlerController() MAIDSAFE_NOEXCEPT override;
   AccountHandlerController(AccountHandlerController&&) = delete;
   AccountHandlerController(const AccountHandlerController&) = delete;
@@ -78,14 +72,12 @@ class AccountHandlerController : public QObject {
   void CreateAccountResultAvailable();
 
  private:
-  helpers::MainWindow& main_window_;
-  models::AccountHandlerModel* account_handler_model_{nullptr};
+  MainWindow& main_window_;
+  AccountHandlerModel* account_handler_model_{nullptr};
   std::future<std::unique_ptr<Launcher>> future_;
 
   AccountHandlingViews current_view_{CreateAccountView};
 };
-
-}  // namespace controllers
 
 }  // namespace ui
 
