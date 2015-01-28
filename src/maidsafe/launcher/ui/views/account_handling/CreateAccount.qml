@@ -22,10 +22,20 @@ import QtQuick.Controls.Styles 1.3
 
 import "./detail"
 import "../../custom_components"
+import "../../resources/js/password_strength.js" as PasswordStrength
 
 FocusScope {
   id: createAccountRoot
   objectName: "createAccountRoot"
+
+  QtObject {
+    id: dPtr
+    objectName: "dPtr"
+
+    property var passwordStrength: new PasswordStrength.StrengthChecker()
+    property string pin: ""
+    property string keyword: ""
+  }
 
   Row {
     id: createAccountTabRow
@@ -63,9 +73,6 @@ FocusScope {
     id: userInputLoader
     objectName: "userInputLoader"
 
-    property string pin: ""
-    property string keyword: ""
-
     anchors {
       horizontalCenter: parent.horizontalCenter
       bottom: parent.bottom; bottomMargin: globalProperties.createAccountNextButtonBottomMargin
@@ -89,9 +96,6 @@ FocusScope {
       onPrimaryFieldTabPressed: {
         if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
       }
-      onConfirmationFieldTabPressed: {
-        if (confirmationTextField.text !== "") { confirmationTextField.showTickImage = true }
-      }
 
       primaryTextField.onTextChanged: {
         if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
@@ -110,18 +114,19 @@ FocusScope {
         if (!primaryTextField.text.match(/^\d{4}$/)) {
           primaryTextField.showErrorImage = true
           floatingStatus.infoText.text = qsTr("PIN must be only and exactly 4 digits")
-          floatingStatus.infoText.color = "#ff0000"
+          floatingStatus.infoText.color = globalBrushes.textWeakPassword
           floatingStatus.pointToItem = primaryTextField
           floatingStatus.visible = true
         }
         else if (primaryTextField.text !== confirmationTextField.text) {
           confirmationTextField.showErrorImage = true
           floatingStatus.infoText.text = qsTr("Entries don't match")
+          floatingStatus.infoText.color = globalBrushes.textWeakPassword
           floatingStatus.pointToItem = confirmationTextField
           floatingStatus.visible = true
         }
         else {
-          userInputLoader.pin = primaryTextField.text
+          dPtr.pin = primaryTextField.text
           userInputLoader.sourceComponent = acceptKeywordComponent
           ++tabRepeater.currentTabIndex
         }
@@ -140,10 +145,36 @@ FocusScope {
       confirmationTextField.placeholderText: qsTr("Confirm Keyword")
 
       onPrimaryFieldTabPressed: {
-        if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
-      }
-      onConfirmationFieldTabPressed: {
-        if (confirmationTextField.text !== "") { confirmationTextField.showTickImage = true }
+        if (primaryTextField.text !== "") {
+          var result = dPtr.passwordStrength.check(primaryTextField.text)
+          switch (result.score) {
+          case 0:
+          case 1:
+            primaryTextField.showErrorImage = true
+            floatingStatus.metaText.text = qsTr("Strength:")
+            floatingStatus.infoText.text = qsTr("Weak")
+            floatingStatus.infoText.color = globalBrushes.textWeakPassword
+            floatingStatus.pointToItem = primaryTextField
+            floatingStatus.visible = true
+            break
+          case 2:
+            primaryTextField.showTickImage = true
+            floatingStatus.metaText.text = qsTr("Strength:")
+            floatingStatus.infoText.text = qsTr("Medium")
+            floatingStatus.infoText.color = globalBrushes.textMediumPassword
+            floatingStatus.pointToItem = primaryTextField
+            floatingStatus.visible = true
+            break
+          default:
+            primaryTextField.showTickImage = true
+            floatingStatus.metaText.text = qsTr("Strength:")
+            floatingStatus.infoText.text = qsTr("Strong")
+            floatingStatus.infoText.color = globalBrushes.textStrongPassword
+            floatingStatus.pointToItem = primaryTextField
+            floatingStatus.visible = true
+            break
+          }
+        }
       }
 
       primaryTextField.onTextChanged: {
@@ -163,18 +194,19 @@ FocusScope {
         if (primaryTextField.text === "") {
           primaryTextField.showErrorImage = true
           floatingStatus.infoText.text = qsTr("Keyword cannot be left blank")
-          floatingStatus.infoText.color = "#ff0000"
+          floatingStatus.infoText.color = globalBrushes.textWeakPassword
           floatingStatus.pointToItem = primaryTextField
           floatingStatus.visible = true
         }
         else if (primaryTextField.text !== confirmationTextField.text) {
           confirmationTextField.showErrorImage = true
           floatingStatus.infoText.text = qsTr("Entries don't match")
+          floatingStatus.infoText.color = globalBrushes.textWeakPassword
           floatingStatus.pointToItem = confirmationTextField
           floatingStatus.visible = true
         }
         else {
-          userInputLoader.keyword = primaryTextField.text
+          dPtr.keyword = primaryTextField.text
           userInputLoader.sourceComponent = acceptPasswordComponent
           ++tabRepeater.currentTabIndex
         }
@@ -193,10 +225,36 @@ FocusScope {
       confirmationTextField.placeholderText: qsTr("Confirm Password")
 
       onPrimaryFieldTabPressed: {
-        if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
-      }
-      onConfirmationFieldTabPressed: {
-        if (confirmationTextField.text !== "") { confirmationTextField.showTickImage = true }
+        if (primaryTextField.text !== "") {
+          var result = dPtr.passwordStrength.check(primaryTextField.text, [])
+          switch (result.score) {
+          case 0:
+          case 1:
+            primaryTextField.showErrorImage = true
+            floatingStatus.metaText.text = qsTr("Strength:")
+            floatingStatus.infoText.text = qsTr("Weak")
+            floatingStatus.infoText.color = globalBrushes.textWeakPassword
+            floatingStatus.pointToItem = primaryTextField
+            floatingStatus.visible = true
+            break
+          case 2:
+            primaryTextField.showTickImage = true
+            floatingStatus.metaText.text = qsTr("Strength:")
+            floatingStatus.infoText.text = qsTr("Medium")
+            floatingStatus.infoText.color = globalBrushes.textMediumPassword
+            floatingStatus.pointToItem = primaryTextField
+            floatingStatus.visible = true
+            break
+          default:
+            primaryTextField.showTickImage = true
+            floatingStatus.metaText.text = qsTr("Strength:")
+            floatingStatus.infoText.text = qsTr("Strong")
+            floatingStatus.infoText.color = globalBrushes.textStrongPassword
+            floatingStatus.pointToItem = primaryTextField
+            floatingStatus.visible = true
+            break
+          }
+        }
       }
 
       primaryTextField.onTextChanged: {
@@ -216,19 +274,19 @@ FocusScope {
         if (primaryTextField.text === "") {
           primaryTextField.showErrorImage = true
           floatingStatus.infoText.text = qsTr("Password cannot be left blank")
-          floatingStatus.infoText.color = "#ff0000"
+          floatingStatus.infoText.color = globalBrushes.textWeakPassword
           floatingStatus.pointToItem = primaryTextField
           floatingStatus.visible = true
         }
         else if (primaryTextField.text !== confirmationTextField.text) {
           confirmationTextField.showErrorImage = true
           floatingStatus.infoText.text = qsTr("Entries don't match")
+          floatingStatus.infoText.color = globalBrushes.textWeakPassword
           floatingStatus.pointToItem = confirmationTextField
           floatingStatus.visible = true
         }
         else {
-          accountHandlerController_.createAccount(userInputLoader.pin, userInputLoader.keyword,
-                                                  primaryTextField.text)
+          accountHandlerController_.createAccount(dPtr.pin, dPtr.keyword, primaryTextField.text)
         }
       }
     }

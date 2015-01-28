@@ -26,6 +26,7 @@ Rectangle {
   property alias metaText: metaInformationText
   property alias infoText: informationText
   property real yOffset: 0
+  property bool wipeTextsOnNoVisibility: true
 
   y: pointToItem ? pointToItem.y + pointToItem.height / 2 - height / 2 + yOffset : 0
 
@@ -33,13 +34,24 @@ Rectangle {
                   metaInformationText.implicitWidth   +
                   informationText.implicitWidth       +
                   metaInformationText.anchors.margins +
-                  informationText.anchors.margins)
+                  informationText.anchors.margins * 2)
 
-  height: Math.max(informationText.implicitHeight, metaInformationText.implicitHeight,
+  height: Math.max(informationText.implicitHeight + informationText.implicitHeight *
+                   informationText.implicitWidth / (informationText.width ?
+                                                      informationText.width : 1),
+                   metaInformationText.implicitHeight + metaInformationText.implicitHeight *
+                   metaInformationText.implicitWidth / (metaInformationText.width ?
+                                                          metaInformationText.width : 1),
                    globalProperties.textFieldHeight)
 
   radius: globalProperties.textFieldRadius
   visible: false
+
+  onVisibleChanged: {
+    if (!visible && wipeTextsOnNoVisibility) {
+      metaInformationText.text = informationText.text = ""
+    }
+  }
 
   Rectangle {
     id: pointerRect
@@ -59,7 +71,7 @@ Rectangle {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     color: globalBrushes.textGrey
-    font { pixelSize: 12; bold: true }
+    font.pixelSize: 12
   }
 
   CustomText {
@@ -75,7 +87,7 @@ Rectangle {
     verticalAlignment: Text.AlignVCenter
 
     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-    color: "green"
-    font { pixelSize: 12; bold: true }
+    color: globalBrushes.textGrey
+    font.pixelSize: 12
   }
 }

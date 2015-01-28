@@ -21,7 +21,9 @@ import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
 
 import MainController 1.0
+
 import "./detail"
+import "../custom_components"
 
 Item {
   id: mainWindowItem
@@ -35,7 +37,12 @@ Item {
     id: dragMainWindowHelper
     objectName: "dragMainWindowHelper"
 
-    anchors.fill: parent
+    anchors {
+      top: parent.top; right: parent.right; left: parent.left; bottom: mainWindowTitleBar.bottom
+      leftMargin: Qt.platform.os === "linux" || Qt.platform.os === "osx" ?
+                    mainWindowTitleBar.buttonLoaderwidth + 5 : 0
+      rightMargin: Qt.platform.os === "windows" ? mainWindowTitleBar.buttonLoaderwidth + 5 : 0
+    }
   }
 
   Loader {
@@ -59,10 +66,10 @@ Item {
     anchors.fill: parent
   }
 
-  MainWindowFrameButtons {
-    id: mainWindowFrameButtons
-    objectName: "mainWindowFrameButtons"
+  CustomTitleBar {
+    id: mainWindowTitleBar
+    objectName: "mainWindowTitleBar"
 
-    anchors { top: parent.top; left: parent.left; margins: 5 }
+    anchors { top: parent.top; left: parent.left; right: parent.right; margins: 5 }
   }
 }

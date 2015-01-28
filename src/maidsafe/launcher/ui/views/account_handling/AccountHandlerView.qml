@@ -35,9 +35,13 @@ FocusScope {
     Component.onCompleted: {
       globalWindowResizeHelper.enabled = false
       mainWindow_.setWindowSize(implicitWidth, implicitHeight)
+      mainWindowTitleBar.maximiseRestorEnabled = false
     }
 
-    Component.onDestruction: globalWindowResizeHelper.enabled = true
+    Component.onDestruction: {
+      mainWindowTitleBar.maximiseRestorEnabled = true
+      globalWindowResizeHelper.enabled = true
+    }
 
     source: "/resources/images/login_bg.png"
 
