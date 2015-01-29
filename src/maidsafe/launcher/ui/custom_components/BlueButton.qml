@@ -24,6 +24,9 @@ Button {
   id: buttonControl
   objectName: "buttonControl"
 
+  property bool underlineLabelOnFocus: true
+  property bool italiciseLabelOnFocus: true
+
   Keys.onEnterPressed: clicked();
   Keys.onSpacePressed: clicked();
   Keys.onReturnPressed: clicked();
@@ -44,7 +47,7 @@ Button {
       color: control.pressed ?
                globalBrushes.buttonPressedBlue
              :
-               control.hovered ?
+               control.hovered || control.activeFocus ?
                  globalBrushes.buttonHoveredBlue
                :
                  globalBrushes.buttonDefaultBlue
@@ -57,6 +60,11 @@ Button {
       text: control.text
       verticalAlignment: Qt.AlignVCenter
       horizontalAlignment: Qt.AlignHCenter
+
+      font {
+        italic: control.italiciseLabelOnFocus && control.activeFocus ? true : false
+        underline: control.underlineLabelOnFocus && control.activeFocus ? true : false
+      }
     }
   }
 }

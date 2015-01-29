@@ -45,13 +45,16 @@ FocusScope {
       right: Qt.platform.os === "windows" ? parent.right : undefined
     }
 
-    sourceComponent: Qt.platform.os === "linux" ?
+    sourceComponent: Qt.platform.os == "linux" ?
                        linuxButtonsComponent
                      :
                        Qt.platform.os === "windows" ?
                          windowsButtonsComponent
                        :
-                         null
+                         Qt.platform.os !== "osx" ?
+                           macButtonsComponent
+                         :
+                           undefined
   }
 
   Component {
@@ -156,7 +159,7 @@ FocusScope {
 
         Image {
           id: closeImage
-          objectName: "minimiseImage"
+          objectName: "closeImage"
 
           source: "/resources/icons/window_details/close.png"
         }
@@ -197,7 +200,7 @@ FocusScope {
 
         Image {
           id: closeImage
-          objectName: "minimiseImage"
+          objectName: "closeImage"
 
           source: "/resources/icons/window_details/close.png"
         }
@@ -269,6 +272,95 @@ FocusScope {
                     "/resources/icons/window_details/maximise.png"
                   :
                     "/resources/icons/window_details/restore.png"
+        }
+      }
+    }
+  }
+
+  Component {
+    id: macButtonsComponent
+
+    Row {
+      id: macButtonsRow
+      objectName: "macButtonsRow"
+
+      spacing: 3
+
+      Image {
+        id: closeImage
+        objectName: "closeImage"
+
+        visible: focusScopeRoot.closeVisble
+        enabled: focusScopeRoot.closeEnabled
+
+        source: enabled ?
+                  (closeMouseArea.containsMouse ?
+                     "/resources/icons/window_details/mac_close_hover.png"
+                   :
+                     "/resources/icons/window_details/mac_close.png")
+                :
+                  "/resources/icons/window_details/mac_all_disabled.png"
+
+        MouseArea {
+          id: closeMouseArea
+          objectName: "closeMouseArea"
+
+          anchors.fill: parent
+          hoverEnabled: true
+
+          onClicked: Qt.quit()
+        }
+      }
+
+      Image {
+        id: minimiseImage
+        objectName: "minimiseImage"
+
+        visible: focusScopeRoot.minimiseVisble
+        enabled: focusScopeRoot.minimiseEnabled
+
+        source: enabled ?
+                  (minimiseMouseArea.containsMouse ?
+                     "/resources/icons/window_details/mac_minimise_hover.png"
+                   :
+                     "/resources/icons/window_details/mac_minimise.png")
+                :
+                  "/resources/icons/window_details/mac_all_disabled.png"
+
+        MouseArea {
+          id: minimiseMouseArea
+          objectName: "minimiseMouseArea"
+
+          anchors.fill: parent
+          hoverEnabled: true
+
+          onClicked: mainWindow_.showMinimized()
+        }
+      }
+
+      Image {
+        id: maximiseImage
+        objectName: "maximiseImage"
+
+        visible: focusScopeRoot.maximiseRestorVisble
+        enabled: focusScopeRoot.maximiseRestorEnabled
+
+        source: enabled ?
+                  (maximiseMouseArea.containsMouse ?
+                     "/resources/icons/window_details/mac_maximise_hover.png"
+                   :
+                     "/resources/icons/window_details/mac_maximise.png")
+                :
+                  "/resources/icons/window_details/mac_all_disabled.png"
+
+        MouseArea {
+          id: maximiseMouseArea
+          objectName: "maximiseMouseArea"
+
+          anchors.fill: parent
+          hoverEnabled: true
+
+          onClicked: mainWindow_.showMaximized()
         }
       }
     }

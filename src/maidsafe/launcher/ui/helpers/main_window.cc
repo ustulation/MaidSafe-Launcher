@@ -18,6 +18,8 @@
 
 #include "maidsafe/launcher/ui/helpers/main_window.h"
 
+#include "maidsafe/common/log.h"
+
 namespace maidsafe {
 
 namespace launcher {
@@ -56,26 +58,27 @@ void MainWindow::changeWindowSize(int deltaX, int deltaY) {
 
 void MainWindow::StatusChanged(const QQuickView::Status status) {
   qDebug() << "QML Loading Status:";
+  LOG(kAlways) << "QML Loading Status:";
   switch (status) {
     case QQuickView::Null:
       qDebug() << "Status: Null.";
-      //      LOG() << "Status: Null.";
+      LOG(kAlways) << "Status: Null.";
       break;
     case QQuickView::Ready:
       qDebug() << "Status: Ready.";
-      //      LOG() << "Status: Ready.";
+      LOG(kAlways) << "Status: Ready.";
       break;
     case QQuickView::Loading:
       qDebug() << "Status: Loading.";
-      //      LOG() << "Status: Loading.";
+      LOG(kAlways) << "Status: Loading.";
       break;
     case QQuickView::Error:
       qDebug() << "Status: ERROR.";
-      //      LOG() << "Status: ERROR.";
+      LOG(kAlways) << "Status: ERROR.";
       break;
     default:
       qDebug() << "Status: Unknown.";
-      //      LOG() << "Status: Unknown.";
+      LOG(kAlways) << "Status: Unknown.";
       break;
   }
 }

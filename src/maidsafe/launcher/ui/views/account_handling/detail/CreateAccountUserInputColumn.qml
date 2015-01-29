@@ -72,6 +72,10 @@ FocusScope {
         focusScopeRoot.primaryFieldTabPressed()
         event.accepted = false
       }
+      Keys.onBacktabPressed: {
+        focusScopeRoot.primaryFieldTabPressed()
+        event.accepted = false
+      }
     }
 
     CustomTextField {
@@ -85,6 +89,10 @@ FocusScope {
       Keys.onEnterPressed: nextButton.clicked()
       Keys.onReturnPressed: nextButton.clicked()
       Keys.onTabPressed: {
+        focusScopeRoot.confirmationFieldTabPressed()
+        event.accepted = false
+      }
+      Keys.onBacktabPressed: {
         focusScopeRoot.confirmationFieldTabPressed()
         event.accepted = false
       }

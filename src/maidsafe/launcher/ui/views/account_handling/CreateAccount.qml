@@ -93,8 +93,10 @@ FocusScope {
       primaryTextField.placeholderText: qsTr("Choose a 4 digit PIN")
       confirmationTextField.placeholderText: qsTr("Confirm PIN")
 
-      onPrimaryFieldTabPressed: {
-        if (primaryTextField.text !== "") { primaryTextField.showTickImage = true }
+      primaryTextField.onActiveFocusChanged: {
+        if (!primaryTextField.activeFocus && primaryTextField.text !== "") {
+          primaryTextField.showTickImage = true
+        }
       }
 
       primaryTextField.onTextChanged: {
@@ -144,8 +146,8 @@ FocusScope {
       primaryTextField.placeholderText: qsTr("Choose a Keyword")
       confirmationTextField.placeholderText: qsTr("Confirm Keyword")
 
-      onPrimaryFieldTabPressed: {
-        if (primaryTextField.text !== "") {
+      primaryTextField.onActiveFocusChanged: {
+        if(!primaryTextField.activeFocus && primaryTextField.text !== "") {
           var result = dPtr.passwordStrength.check(primaryTextField.text)
           switch (result.score) {
           case 0:
@@ -224,8 +226,8 @@ FocusScope {
       primaryTextField.placeholderText: qsTr("Choose a Password")
       confirmationTextField.placeholderText: qsTr("Confirm Password")
 
-      onPrimaryFieldTabPressed: {
-        if (primaryTextField.text !== "") {
+      primaryTextField.onActiveFocusChanged: {
+        if (!primaryTextField.activeFocus && primaryTextField.text !== "") {
           var result = dPtr.passwordStrength.check(primaryTextField.text, [])
           switch (result.score) {
           case 0:

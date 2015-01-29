@@ -12,7 +12,6 @@
         <file>resources/images/login_bg.png</file>
         <file>custom_components/CustomTextField.qml</file>
         <file>views/detail/ResizeMainWindowHelper.qml</file>
-        <file>views/detail/MainWindowFrameButtons.qml</file>
         <file>views/detail/DragMainWindowHelper.qml</file>
         <file>views/detail/GlobalProperties.qml</file>
         <file>views/detail/GlobalBrushes.qml</file>
@@ -28,5 +27,12 @@
         <file>resources/icons/window_details/maximise.png</file>
         <file>resources/icons/window_details/minimise.png</file>
         <file>resources/icons/window_details/restore.png</file>
+        <file>resources/icons/window_details/mac_all_disabled.png</file>
+        <file>resources/icons/window_details/mac_close.png</file>
+        <file>resources/icons/window_details/mac_close_hover.png</file>
+        <file>resources/icons/window_details/mac_maximise.png</file>
+        <file>resources/icons/window_details/mac_maximise_hover.png</file>
+        <file>resources/icons/window_details/mac_minimise.png</file>
+        <file>resources/icons/window_details/mac_minimise_hover.png</file>
     </qresource>
 </RCC>

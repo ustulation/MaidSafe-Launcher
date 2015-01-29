@@ -18,6 +18,7 @@
 
 #include "maidsafe/launcher/ui/helpers/application.h"
 
+#include "maidsafe/common/log.h"
 #include "maidsafe/launcher/ui/controllers/main_controller.h"
 
 namespace maidsafe {
@@ -37,6 +38,7 @@ Application::Application(int argc, char** argv)
       translators_(),
       current_translator_(),
       shared_memory_() {
+  maidsafe::log::Logging::Instance().Initialise(argc, argv);
   CreateTranslators();
   SwitchLanguage("en");
 }
