@@ -148,6 +148,9 @@ FocusScope {
 
       primaryTextField.onActiveFocusChanged: {
         if(!primaryTextField.activeFocus && primaryTextField.text !== "") {
+          floatingStatus.visible = false
+          clearAllStatusImages()
+
           var result = dPtr.passwordStrength.check(primaryTextField.text)
           switch (result.score) {
           case 0:
@@ -228,7 +231,10 @@ FocusScope {
 
       primaryTextField.onActiveFocusChanged: {
         if (!primaryTextField.activeFocus && primaryTextField.text !== "") {
-          var result = dPtr.passwordStrength.check(primaryTextField.text, [])
+          floatingStatus.visible = false
+          clearAllStatusImages()
+
+          var result = dPtr.passwordStrength.check(primaryTextField.text, [dPtr.keyword])
           switch (result.score) {
           case 0:
           case 1:
