@@ -38,9 +38,6 @@ class MainWindow : public QQuickView {
   ~MainWindow() MAIDSAFE_NOEXCEPT override;
 
   Q_INVOKABLE void centerToScreen();
-  Q_INVOKABLE void setWindowSize(const int width, const int height);
-  Q_INVOKABLE void changeWindowPosition(int deltaX, int deltaY);
-  Q_INVOKABLE void changeWindowSize(int deltaX, int deltaY);
 
  private slots:  // NOLINT - Viv
   void StatusChanged(const QQuickView::Status status);

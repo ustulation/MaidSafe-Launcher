@@ -24,5 +24,8 @@ Label {
   objectName: "customLabel"
 
   color: globalBrushes.labelDefault
-  font { pixelSize: globalProperties.fontPixelSize; family: globalFontFamily.name }
+  font {
+    pixelSize: globalProperties.fontPixelSize
+    family: globalFontFamily.name
+  }
 }

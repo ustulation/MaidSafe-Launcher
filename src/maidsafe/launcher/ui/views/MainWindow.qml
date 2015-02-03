@@ -38,11 +38,15 @@ Item {
     objectName: "dragMainWindowHelper"
 
     anchors {
-      top: parent.top; right: parent.right; left: parent.left; bottom: mainWindowTitleBar.bottom
+      top: parent.top
+      right: parent.right
+      left: parent.left
+      bottom: mainWindowTitleBar.bottom
       leftMargin: Qt.platform.os === "linux" || Qt.platform.os === "osx" ?
-                    mainWindowTitleBar.buttonLoaderwidth + 5 : 0
-      rightMargin: Qt.platform.os === "windows" ? mainWindowTitleBar.buttonLoaderwidth + 5 : 0
+                    mainWindowTitleBar.buttonLoaderwidth + 10 : 0
+      rightMargin: Qt.platform.os === "windows" ? mainWindowTitleBar.buttonLoaderwidth + 10 : 0
     }
+    enabled: mainWindowTitleBar.visible
   }
 
   Loader {
@@ -64,12 +68,21 @@ Item {
     objectName: "globalWindowResizeHelper"
 
     anchors.fill: parent
+    enabled: Qt.platform.os !== "linux"
   }
 
   CustomTitleBar {
     id: mainWindowTitleBar
     objectName: "mainWindowTitleBar"
 
-    anchors { top: parent.top; left: parent.left; right: parent.right; margins: 5 }
+    anchors {
+      top: parent.top
+      left: parent.left
+      right: parent.right
+      margins: 5
+    }
+
+    visible: Qt.platform.os !== "linux"
+    enabled: visible
   }
 }

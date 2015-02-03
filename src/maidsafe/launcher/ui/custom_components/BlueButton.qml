@@ -25,7 +25,7 @@ Button {
   objectName: "buttonControl"
 
   property bool underlineLabelOnFocus: true
-  property bool italiciseLabelOnFocus: true
+  property bool italiciseLabelOnFocus: false
 
   Keys.onEnterPressed: clicked();
   Keys.onSpacePressed: clicked();
@@ -44,13 +44,11 @@ Button {
       radius: globalProperties.textFieldRadius
       antialiasing: true
 
-      color: control.pressed ?
-               globalBrushes.buttonPressedBlue
-             :
-               control.hovered || control.activeFocus ?
-                 globalBrushes.buttonHoveredBlue
-               :
-                 globalBrushes.buttonDefaultBlue
+      color: {
+        if (control.pressed) globalBrushes.buttonPressedBlue
+        else if (control.hovered || control.activeFocus) globalBrushes.buttonHoveredBlue
+        else globalBrushes.buttonDefaultBlue
+      }
     }
 
     label: CustomLabel {

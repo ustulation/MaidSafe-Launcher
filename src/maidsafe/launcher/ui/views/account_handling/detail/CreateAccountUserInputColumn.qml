@@ -25,18 +25,79 @@ FocusScope {
   id: focusScopeRoot
   objectName: "focusScopeRoot"
 
+  signal proceed()
   signal primaryFieldTabPressed()
   signal confirmationFieldTabPressed()
 
+  property var passwordStrength: undefined
   property Item nextFocusItem: null
   property alias primaryTextField: primaryTextField
   property alias confirmationTextField: confirmationTextField
   property alias nextButton: nextButton
   property alias floatingStatus: statusDisplayRect
+  property string fieldName: qsTr("This field")
 
   function clearAllStatusImages() {
     primaryTextField.clearAllImages()
     confirmationTextField.clearAllImages()
+  }
+
+  function validatePIN() {
+    if (!primaryTextField.text.match(/^\d{4}$/)) {
+      primaryTextField.showErrorImage = true
+      floatingStatus.infoText.text = qsTr("PIN must be only and exactly 4 digits")
+      floatingStatus.infoText.color = globalBrushes.textWeakPassword
+      floatingStatus.pointToItem = primaryTextField
+      floatingStatus.visible = true
+      return false
+    }
+
+    return true
+  }
+
+  function validateStrength() {
+    floatingStatus.pointToItem = primaryTextField
+    floatingStatus.metaText.text = qsTr("Strength:")
+
+    var result = passwordStrength.check(primaryTextField.text)
+    switch (result.score) {
+    case 0:
+    case 1:
+      floatingStatus.infoText.text = qsTr("Weak")
+      floatingStatus.infoText.color = globalBrushes.textWeakPassword
+      break
+    case 2:
+      floatingStatus.infoText.text = qsTr("Medium")
+      floatingStatus.infoText.color = globalBrushes.textMediumPassword
+      break
+    default:
+      floatingStatus.infoText.text = qsTr("Strong")
+      floatingStatus.infoText.color = globalBrushes.textStrongPassword
+      break
+    }
+
+    floatingStatus.visible = true
+  }
+
+  function showBlankFieldError() {
+    primaryTextField.showErrorImage = true
+    floatingStatus.infoText.text = qsTr(fieldName + " cannot be left blank")
+    floatingStatus.infoText.color = globalBrushes.textWeakPassword
+    floatingStatus.pointToItem = primaryTextField
+    floatingStatus.visible = true
+  }
+
+  function validateConfirmationMatch() {
+    if (primaryTextField.text !== confirmationTextField.text) {
+      confirmationTextField.showErrorImage = true
+      floatingStatus.infoText.text = qsTr("Entries don't match")
+      floatingStatus.infoText.color = globalBrushes.textWeakPassword
+      floatingStatus.pointToItem = confirmationTextField
+      floatingStatus.visible = true
+      return false
+    }
+
+    return true
   }
 
   width: textFieldsAndButtonColumn.implicitWidth
@@ -46,7 +107,10 @@ FocusScope {
     id: statusDisplayRect
     objectName: "statusDisplayRect"
 
-    anchors { left: textFieldsAndButtonColumn.right; leftMargin: 15 }
+    anchors {
+      left: textFieldsAndButtonColumn.right
+      leftMargin: 15
+    }
     pointToItem: primaryTextField
   }
 
@@ -60,21 +124,29 @@ FocusScope {
       id: primaryTextField
       objectName: "primaryTextField"
 
-      signal tabPressed()
-      signal hello()
-
       anchors.horizontalCenter: parent.horizontalCenter
       echoMode: TextInput.Password
       focus: true
       Keys.onEnterPressed: nextButton.clicked()
       Keys.onReturnPressed: nextButton.clicked()
+
       Keys.onTabPressed: {
         focusScopeRoot.primaryFieldTabPressed()
         event.accepted = false
       }
+
       Keys.onBacktabPressed: {
         focusScopeRoot.primaryFieldTabPressed()
         event.accepted = false
+      }
+
+      onTextChanged: {
+        floatingStatus.visible = false
+        confirmationTextField.clearAllImages()
+
+        if (fieldName !== qsTr("PIN") && text !== "") {
+          validateStrength()
+        }
       }
     }
 
@@ -82,19 +154,26 @@ FocusScope {
       id: confirmationTextField
       objectName: "confirmationTextField"
 
-      signal tabPressed()
-
       anchors.horizontalCenter: parent.horizontalCenter
       echoMode: TextInput.Password
       Keys.onEnterPressed: nextButton.clicked()
       Keys.onReturnPressed: nextButton.clicked()
+
       Keys.onTabPressed: {
         focusScopeRoot.confirmationFieldTabPressed()
         event.accepted = false
       }
+
       Keys.onBacktabPressed: {
         focusScopeRoot.confirmationFieldTabPressed()
         event.accepted = false
+      }
+
+      onTextChanged: {
+        if (floatingStatus.pointToItem === confirmationTextField ||
+            !primaryTextField.showErrorImage) {
+          floatingStatus.visible = false
+        }
       }
     }
 
@@ -104,6 +183,23 @@ FocusScope {
 
       text: qsTr("Next")
       KeyNavigation.tab: nextFocusItem
+
+      onClicked: {
+        floatingStatus.visible = false
+        clearAllStatusImages()
+
+        var ok = false
+
+        if (primaryTextField.text === "") { showBlankFieldError() }
+        else {
+          ok = fieldName === qsTr("PIN") ?
+                validatePIN() && validateConfirmationMatch()
+              :
+                validateConfirmationMatch()
+        }
+
+        if (ok) { focusScopeRoot.proceed() }
+      }
     }
   }
 }

@@ -31,7 +31,10 @@ MainWindow::MainWindow(QWindow* parent) : QQuickView{parent} {
           SLOT(StatusChanged(const QQuickView::Status)), Qt::UniqueConnection);
 
   setResizeMode(QQuickView::SizeRootObjectToView);
-  setFlags(Qt::FramelessWindowHint);
+
+#if !defined(__linux__)
+  setFlags(flags() | Qt::FramelessWindowHint);
+#endif
 }
 
 MainWindow::~MainWindow() MAIDSAFE_NOEXCEPT = default;
@@ -40,20 +43,6 @@ void MainWindow::centerToScreen() {
   auto screen_width(QDesktopWidget{}.screen()->width());
   auto screen_height(QDesktopWidget{}.screen()->height());
   setGeometry(screen_width / 2 - width() / 2, screen_height / 2 - height() / 2, width(), height());
-}
-
-void MainWindow::setWindowSize(const int width, const int height) {
-  setWidth(width);
-  setHeight(height);
-}
-
-void MainWindow::changeWindowPosition(int deltaX, int deltaY) {
-  setPosition(x() + deltaX, y() + deltaY);
-}
-
-void MainWindow::changeWindowSize(int deltaX, int deltaY) {
-  setWidth(width() + deltaX);
-  setHeight(height() + deltaY);
 }
 
 void MainWindow::StatusChanged(const QQuickView::Status status) {

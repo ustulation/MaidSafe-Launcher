@@ -33,8 +33,8 @@ Rectangle {
   width: Math.min(180,
                   metaInformationText.implicitWidth   +
                   informationText.implicitWidth       +
-                  metaInformationText.anchors.margins +
-                  informationText.anchors.margins * 2)
+                  metaInformationText.anchors.leftMargin +
+                  informationText.anchors.leftMargin +  informationText.anchors.rightMargin)
 
   height: Math.max(informationText.implicitHeight + informationText.implicitHeight *
                    informationText.implicitWidth / (informationText.width ?
@@ -57,7 +57,11 @@ Rectangle {
     id: pointerRect
     objectName: "pointerRect"
 
-    anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: -width / 2 }
+    anchors {
+      verticalCenter: parent.verticalCenter
+      left: parent.left
+      leftMargin: -width / 2
+    }
     width: 8
     height: width
     rotation: 45
@@ -67,7 +71,11 @@ Rectangle {
     id: metaInformationText
     objectName: "metaInformationText"
 
-    anchors { left: parent.left; verticalCenter: parent.verticalCenter; margins: 3 }
+    anchors {
+      left: parent.left
+      verticalCenter: parent.verticalCenter
+      leftMargin: 10
+    }
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     color: globalBrushes.textGrey
@@ -79,8 +87,11 @@ Rectangle {
     objectName: "informationText"
 
     anchors {
-      left: metaInformationText.right; right: parent.right;
-      verticalCenter: parent.verticalCenter; margins: 3
+      left: metaInformationText.right
+      right: parent.right
+      rightMargin: 10
+      verticalCenter: parent.verticalCenter
+      leftMargin: 3
     }
 
     horizontalAlignment: Text.AlignHCenter

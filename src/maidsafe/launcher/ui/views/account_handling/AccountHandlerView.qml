@@ -23,24 +23,35 @@ import "../../custom_components"
 
 FocusScope {
   id: accountHandlerviewRoot
-  objectName: ""
-
-  width: childrenRect.width
-  height: childrenRect.height
+  objectName: "accountHandlerviewRoot"
 
   Image {
     id: accountHandlerView
     objectName: "accountHandlerView"
 
+    // TODO(Spandan) Check this for other flavours of linux and for stability
+    readonly property int correctionFactor: Qt.platform.os === "linux" ? -1 : 0
+
     Component.onCompleted: {
-      globalWindowResizeHelper.enabled = false
-      mainWindow_.setWindowSize(implicitWidth, implicitHeight)
-      mainWindowTitleBar.maximiseRestorEnabled = false
+      mainWindow_.width = implicitWidth
+      mainWindow_.minimumWidth = implicitWidth
+      mainWindow_.maximumWidth = implicitWidth
+
+      mainWindow_.height = implicitHeight
+      mainWindow_.minimumHeight = implicitHeight
+      mainWindow_.maximumHeight = implicitHeight + correctionFactor
+
+      if (Qt.platform.os !== "linux") {
+        mainWindowTitleBar.maximiseRestoreEnabled = false
+        globalWindowResizeHelper.enabled = false
+      }
     }
 
     Component.onDestruction: {
-      mainWindowTitleBar.maximiseRestorEnabled = true
-      globalWindowResizeHelper.enabled = true
+      if (Qt.platform.os !== "linux") {
+        mainWindowTitleBar.maximiseRestoreEnabled = true
+        globalWindowResizeHelper.enabled = true
+      }
     }
 
     source: "/resources/images/login_bg.png"
@@ -50,13 +61,13 @@ FocusScope {
       objectName: "placeHolderTextFirstLine"
 
       anchors {
-        horizontalCenter: parent.horizontalCenter; bottom: placeHolderTextSecondLine.top;
+        horizontalCenter: parent.horizontalCenter
+        bottom: placeHolderTextSecondLine.top
         bottomMargin: 5
       }
 
       font { pixelSize: 45 }
       text: qsTr("SAFE")
-      z: 1
     }
 
     CustomText {
@@ -64,13 +75,16 @@ FocusScope {
       objectName: "placeHolderTextSecondLine"
 
       anchors {
-        horizontalCenter: parent.horizontalCenter; bottom: parent.bottom;
+        horizontalCenter: parent.horizontalCenter
+        bottom: parent.bottom
         bottomMargin: 375
       }
 
-      font { pixelSize: 45; family: globalFontFamily.name }
+      font {
+        pixelSize: 45
+        family: globalFontFamily.name
+      }
       text: qsTr("App Launcher")
-      z: 1
     }
 
     Loader {
@@ -78,13 +92,16 @@ FocusScope {
       objectName: "accountHandlerLoader"
 
       anchors.fill: parent
-      source: accountHandlerController_.currentView === AccountHandlerController.CreateAccountView ?
-                "CreateAccount.qml"
-              :
-                accountHandlerController_.currentView === AccountHandlerController.LoginView ?
-                  "Login.qml"
-                :
-                  ""
+
+      source: {
+        if (accountHandlerController_.currentView === AccountHandlerController.CreateAccountView)
+          "CreateAccount.qml"
+        else if (accountHandlerController_.currentView === AccountHandlerController.LoginView)
+          "Login.qml"
+        else
+          ""
+      }
+
       focus: true
       onLoaded: item.focus = true
     }

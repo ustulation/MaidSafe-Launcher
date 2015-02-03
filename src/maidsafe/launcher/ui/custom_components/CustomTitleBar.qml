@@ -28,8 +28,8 @@ FocusScope {
   property bool minimiseVisble: true
   property bool minimiseEnabled: true
 
-  property bool maximiseRestorVisble: true
-  property bool maximiseRestorEnabled: true
+  property bool maximiseRestoreVisble: true
+  property bool maximiseRestoreEnabled: true
 
   readonly property real buttonLoaderwidth: buttonLoader.implicitWidth
 
@@ -45,16 +45,12 @@ FocusScope {
       right: Qt.platform.os === "windows" ? parent.right : undefined
     }
 
-    sourceComponent: Qt.platform.os == "linux" ?
-                       linuxButtonsComponent
-                     :
-                       Qt.platform.os === "windows" ?
-                         windowsButtonsComponent
-                       :
-                         Qt.platform.os !== "osx" ?
-                           macButtonsComponent
-                         :
-                           undefined
+    sourceComponent: {
+      if (Qt.platform.os === "linux") linuxButtonsComponent
+      else if (Qt.platform.os === "windows") windowsButtonsComponent
+      else if (Qt.platform.os === "osx") macButtonsComponent
+      else undefined
+    }
   }
 
   Component {
@@ -105,8 +101,8 @@ FocusScope {
 
         color: maximiseMouseArea.containsMouse ? "#2020ff" : "#00000000"
 
-        visible: focusScopeRoot.maximiseRestorVisble
-        enabled: focusScopeRoot.maximiseRestorEnabled
+        visible: focusScopeRoot.maximiseRestoreVisble
+        enabled: focusScopeRoot.maximiseRestoreEnabled
 
         MouseArea {
           id: maximiseMouseArea
@@ -245,8 +241,8 @@ FocusScope {
 
         color: maximiseMouseArea.containsMouse ? "#2020ff" : "#00000000"
 
-        visible: focusScopeRoot.maximiseRestorVisble
-        enabled: focusScopeRoot.maximiseRestorEnabled
+        visible: focusScopeRoot.maximiseRestoreVisble
+        enabled: focusScopeRoot.maximiseRestoreEnabled
 
         MouseArea {
           id: maximiseMouseArea
@@ -284,6 +280,9 @@ FocusScope {
       id: macButtonsRow
       objectName: "macButtonsRow"
 
+      property bool containsMouse: closeMouseArea.containsMouse    |
+                                   minimiseMouseArea.containsMouse |
+                                   maximiseMouseArea.containsMouse
       spacing: 3
 
       Image {
@@ -293,13 +292,19 @@ FocusScope {
         visible: focusScopeRoot.closeVisble
         enabled: focusScopeRoot.closeEnabled
 
-        source: enabled ?
-                  (closeMouseArea.containsMouse ?
-                     "/resources/icons/window_details/mac_close_hover.png"
-                   :
-                     "/resources/icons/window_details/mac_close.png")
-                :
-                  "/resources/icons/window_details/mac_all_disabled.png"
+        source: {
+          if (enabled) {
+            if (macButtonsRow.containsMouse) {
+              "/resources/icons/window_details/mac_close_hover.png"
+            }
+            else {
+              "/resources/icons/window_details/mac_close.png"
+            }
+          }
+          else {
+            "/resources/icons/window_details/mac_all_disabled.png"
+          }
+        }
 
         MouseArea {
           id: closeMouseArea
@@ -319,13 +324,19 @@ FocusScope {
         visible: focusScopeRoot.minimiseVisble
         enabled: focusScopeRoot.minimiseEnabled
 
-        source: enabled ?
-                  (minimiseMouseArea.containsMouse ?
-                     "/resources/icons/window_details/mac_minimise_hover.png"
-                   :
-                     "/resources/icons/window_details/mac_minimise.png")
-                :
-                  "/resources/icons/window_details/mac_all_disabled.png"
+        source: {
+          if (enabled) {
+            if (macButtonsRow.containsMouse) {
+              "/resources/icons/window_details/mac_minimise_hover.png"
+            }
+            else {
+              "/resources/icons/window_details/mac_minimise.png"
+            }
+          }
+          else {
+            "/resources/icons/window_details/mac_all_disabled.png"
+          }
+        }
 
         MouseArea {
           id: minimiseMouseArea
@@ -342,16 +353,22 @@ FocusScope {
         id: maximiseImage
         objectName: "maximiseImage"
 
-        visible: focusScopeRoot.maximiseRestorVisble
-        enabled: focusScopeRoot.maximiseRestorEnabled
+        visible: focusScopeRoot.maximiseRestoreVisble
+        enabled: focusScopeRoot.maximiseRestoreEnabled
 
-        source: enabled ?
-                  (maximiseMouseArea.containsMouse ?
-                     "/resources/icons/window_details/mac_maximise_hover.png"
-                   :
-                     "/resources/icons/window_details/mac_maximise.png")
-                :
-                  "/resources/icons/window_details/mac_all_disabled.png"
+        source: {
+          if (enabled) {
+            if (macButtonsRow.containsMouse) {
+              "/resources/icons/window_details/mac_maximise_hover.png"
+            }
+            else {
+              "/resources/icons/window_details/mac_maximise.png"
+            }
+          }
+          else {
+            "/resources/icons/window_details/mac_all_disabled.png"
+          }
+        }
 
         MouseArea {
           id: maximiseMouseArea

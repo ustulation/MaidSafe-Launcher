@@ -31,7 +31,10 @@ FocusScope {
     id: floatingStatus
     objectName: "floatingStatus"
 
-    anchors { left: textFieldsAndButtonColumn.right; leftMargin: 15 }
+    anchors {
+      left: textFieldsAndButtonColumn.right
+      leftMargin: 15
+    }
     pointToItem: textFieldRepeater.itemAt(0)
     infoText.color: "#ff0000"
     yOffset: textFieldsAndButtonColumn.y
@@ -43,7 +46,8 @@ FocusScope {
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom; bottomMargin: globalProperties.loginButtonBottomMargin
+      bottom: parent.bottom
+      bottomMargin: globalProperties.loginButtonBottomMargin
     }
 
     spacing: globalProperties.textFieldVerticalSpacing
@@ -117,7 +121,8 @@ FocusScope {
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom; bottomMargin: globalProperties.accountHandlerClickableTextBottomMargin
+      bottom: parent.bottom
+      bottomMargin: globalProperties.accountHandlerClickableTextBottomMargin
     }
 
     label.text: qsTr("Create Account")

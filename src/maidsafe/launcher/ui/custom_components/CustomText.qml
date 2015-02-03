@@ -23,5 +23,8 @@ Text {
   objectName: "customText"
 
   color: globalBrushes.textDefault
-  font { pixelSize: globalProperties.fontPixelSize; family: globalFontFamily.name }
+  font {
+    pixelSize: globalProperties.fontPixelSize
+    family: globalFontFamily.name
+  }
 }

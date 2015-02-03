@@ -22,8 +22,6 @@ Item {
   id: resizeMainWindowItem
   objectName: "resizeMainWindowItem"
 
-  readonly property int resizerSize: 5
-
   MouseArea {
     id: resizeRightMouseArea
     objectName: "resizeRightMouseArea"
@@ -31,42 +29,50 @@ Item {
     property real prevMouseX
 
     anchors {
-      right: parent.right; top: parent.top; bottom: parent.bottom
-      topMargin: resizeMainWindowItem.resizerSize; bottomMargin: resizeMainWindowItem.resizerSize
+      right: parent.right
+      top: resizeAllRightTopMouseArea.bottom
+      bottom: resizeAllRightBottomMouseArea.top
     }
-    width: resizeMainWindowItem.resizerSize
+    width: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeHorCursor : Qt.ArrowCursor
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton
-    onEntered: { cursorShape = Qt.SizeHorCursor }
-    onExited:  { cursorShape = Qt.ArrowCursor }
     onPressed: { prevMouseX = mouseX }
     onPositionChanged: {
       if(pressed) {
-        mainWindow_.changeWindowSize(mouseX - prevMouseX, 0)
+        mainWindow_.width += mouseX - prevMouseX
       }
     }
   }
 
   MouseArea {
-    id: resizeAllMouseArea
-    objectName: "resizeAllMouseArea"
+    id: resizeAllRightBottomMouseArea
+    objectName: "resizeAllRightBottomMouseArea"
 
     property real prevMouseX
     property real prevMouseY
 
-    anchors { right: parent.right; bottom: parent.bottom }
-    width: resizeMainWindowItem.resizerSize
-    height: resizeMainWindowItem.resizerSize
+    anchors {
+      right: parent.right
+      bottom: parent.bottom
+    }
+    width: globalProperties.windowResizerThickness
+    height: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeAllCursor : Qt.ArrowCursor
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton
-    onEntered: { cursorShape = Qt.SizeAllCursor }
-    onExited:  { cursorShape = Qt.ArrowCursor }
-    onPressed: { prevMouseX = mouseX; prevMouseY = mouseY }
+    onPressed: {
+      prevMouseX = mouseX
+      prevMouseY = mouseY
+    }
     onPositionChanged: {
       if(pressed) {
-        mainWindow_.changeWindowSize(mouseX - prevMouseX, mouseY - prevMouseY)
+        mainWindow_.width += mouseX - prevMouseX
+        mainWindow_.height += mouseY - prevMouseY
       }
     }
   }
@@ -78,20 +84,181 @@ Item {
     property real prevMouseY
 
     anchors {
-      right: parent.right; left: parent.left; bottom: parent.bottom
-      leftMargin: resizeMainWindowItem.resizerSize; rightMargin: resizeMainWindowItem.resizerSize
+      right: resizeAllRightBottomMouseArea.left
+      left: resizeAllLeftBottomMouseArea.right
+      bottom: parent.bottom
     }
-    height: resizeMainWindowItem.resizerSize
+    height: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeVerCursor : Qt.ArrowCursor
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton
-    onEntered: { cursorShape = Qt.SizeVerCursor }
-    onExited:  { cursorShape = Qt.ArrowCursor }
     onPressed: { prevMouseY = mouseY }
     onPositionChanged: {
       if(pressed) {
-        mainWindow_.changeWindowSize(0, mouseY - prevMouseY)
+        mainWindow_.height += mouseY - prevMouseY
       }
     }
   }
+
+  MouseArea {
+    id: resizeAllLeftBottomMouseArea
+    objectName: "resizeAllLeftBottomMouseArea"
+
+    property real prevMouseX
+    property real prevMouseY
+
+    anchors {
+      left: parent.left
+      bottom: parent.bottom
+    }
+    width: globalProperties.windowResizerThickness
+    height: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeAllCursor : Qt.ArrowCursor
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    onPressed: {
+      prevMouseX = mouseX
+      prevMouseY = mouseY
+    }
+    onPositionChanged: {
+      if(pressed) {
+        var deltaX = mouseX - prevMouseX
+        var deltaY = mouseY - prevMouseY
+
+        mainWindow_.x += deltaX
+        mainWindow_.width -= deltaX
+        mainWindow_.height += deltaY
+      }
+    }
+  }
+
+  MouseArea {
+    id: resizeLeftMouseArea
+    objectName: "resizeLeftMouseArea"
+
+    property real prevMouseX
+
+    anchors {
+      left: parent.left
+      top: resizeAllLeftTopMouseArea.bottom
+      bottom: resizeAllLeftBottomMouseArea.top
+    }
+    width: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeHorCursor : Qt.ArrowCursor
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    onPressed: { prevMouseX = mouseX ; console.log(mainWindow_.x, mainWindow_.y)}
+    onPositionChanged: {
+      if(pressed) {
+        var deltaX = mouseX - prevMouseX
+
+        mainWindow_.x += deltaX
+        mainWindow_.width -= deltaX
+      }
+    }
+  }
+
+  MouseArea {
+    id: resizeAllLeftTopMouseArea
+    objectName: "resizeAllLeftTopMouseArea"
+
+    property real prevMouseX
+    property real prevMouseY
+
+    anchors {
+      left: parent.left
+      top: parent.top
+    }
+    width: globalProperties.windowResizerThickness
+    height: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeAllCursor : Qt.ArrowCursor
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    onPressed: {
+      prevMouseX = mouseX
+      prevMouseY = mouseY
+    }
+    onPositionChanged: {
+      if(pressed) {
+        var deltaX = mouseX - prevMouseX
+        var deltaY = mouseY - prevMouseY
+
+        mainWindow_.x += deltaX
+        mainWindow_.width -= deltaX
+        mainWindow_.y += deltaY
+        mainWindow_.height -= deltaY
+      }
+    }
+  }
+
+  MouseArea {
+    id: resizeUpMouseArea
+    objectName: "resizeUpMouseArea"
+
+    property real prevMouseY
+
+    anchors {
+      right: resizeAllRightTopMouseArea.left
+      left: resizeAllLeftTopMouseArea.right
+      top: parent.top
+    }
+    height: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeVerCursor : Qt.ArrowCursor
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    onPressed: { prevMouseY = mouseY }
+    onPositionChanged: {
+      if(pressed) {
+        var deltaY = mouseY - prevMouseY
+
+        mainWindow_.y += deltaY
+        mainWindow_.height -= deltaY
+      }
+    }
+  }
+
+  MouseArea {
+    id: resizeAllRightTopMouseArea
+    objectName: "resizeAllRightTopMouseArea"
+
+    property real prevMouseX
+    property real prevMouseY
+
+    anchors {
+      right: parent.right
+      top: parent.top
+    }
+    width: globalProperties.windowResizerThickness
+    height: globalProperties.windowResizerThickness
+
+    cursorShape: containsMouse ? Qt.SizeAllCursor : Qt.ArrowCursor
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    onPressed: {
+      prevMouseX = mouseX
+      prevMouseY = mouseY
+    }
+    onPositionChanged: {
+      if(pressed) {
+        var deltaX = mouseX - prevMouseX
+        var deltaY = mouseY - prevMouseY
+
+        mainWindow_.width += deltaX
+        mainWindow_.y += deltaY
+        mainWindow_.height -= deltaY
+      }
+    }
+  }
+
 }

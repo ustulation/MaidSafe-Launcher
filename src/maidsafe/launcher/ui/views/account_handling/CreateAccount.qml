@@ -33,6 +33,7 @@ FocusScope {
     objectName: "dPtr"
 
     property var passwordStrength: new PasswordStrength.StrengthChecker()
+    property int currentTabIndex: 0
     property string pin: ""
     property string keyword: ""
   }
@@ -43,7 +44,8 @@ FocusScope {
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: userInputLoader.top; bottomMargin: globalProperties.textFieldHeight
+      bottom: userInputLoader.top
+      bottomMargin: globalProperties.textFieldHeight
     }
 
     spacing: 15
@@ -52,8 +54,6 @@ FocusScope {
       id: tabRepeater
       objectName: "tabRepeater"
 
-      property int currentTabIndex: 0
-
       model: [qsTr("PIN"), qsTr("Keyword"), qsTr("Password")]
 
       delegate: CustomLabel {
@@ -61,7 +61,7 @@ FocusScope {
         objectName: "tabLabel"
 
         text: modelData
-        color: model.index === tabRepeater.currentTabIndex ?
+        color: model.index === dPtr.currentTabIndex ?
                  globalBrushes.labelSelected
                :
                  globalBrushes.labelNotSelected
@@ -75,12 +75,22 @@ FocusScope {
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom; bottomMargin: globalProperties.createAccountNextButtonBottomMargin
+      bottom: parent.bottom
+      bottomMargin: globalProperties.createAccountNextButtonBottomMargin
     }
 
     focus: true
-    sourceComponent: acceptPINComponent
-    onLoaded: { item.nextFocusItem = showLoginPageLabel; item.focus = true }
+    sourceComponent: {
+      if (!dPtr.currentTabIndex) acceptPINComponent
+      else if (dPtr.currentTabIndex === 1) acceptKeywordComponent
+      else acceptPasswordComponent
+    }
+
+    onLoaded: {
+      item.passwordStrength = dPtr.passwordStrength
+      item.nextFocusItem = clickableTextLoader
+      item.focus = true
+    }
   }
 
   Component {
@@ -90,48 +100,13 @@ FocusScope {
       id: textFieldsAndButtonColumn
       objectName: "textFieldsAndButtonColumn"
 
+      fieldName: qsTr("PIN")
       primaryTextField.placeholderText: qsTr("Choose a 4 digit PIN")
       confirmationTextField.placeholderText: qsTr("Confirm PIN")
 
-      primaryTextField.onActiveFocusChanged: {
-        if (!primaryTextField.activeFocus && primaryTextField.text !== "") {
-          primaryTextField.showTickImage = true
-        }
-      }
-
-      primaryTextField.onTextChanged: {
-        if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
-          floatingStatus.visible = false
-        }
-      }
-      confirmationTextField.onTextChanged: {
-        if (floatingStatus.visible && floatingStatus.pointToItem === confirmationTextField) {
-          floatingStatus.visible = false
-        }
-      }
-
-      nextButton.onClicked: {
-        floatingStatus.visible = false
-        clearAllStatusImages()
-        if (!primaryTextField.text.match(/^\d{4}$/)) {
-          primaryTextField.showErrorImage = true
-          floatingStatus.infoText.text = qsTr("PIN must be only and exactly 4 digits")
-          floatingStatus.infoText.color = globalBrushes.textWeakPassword
-          floatingStatus.pointToItem = primaryTextField
-          floatingStatus.visible = true
-        }
-        else if (primaryTextField.text !== confirmationTextField.text) {
-          confirmationTextField.showErrorImage = true
-          floatingStatus.infoText.text = qsTr("Entries don't match")
-          floatingStatus.infoText.color = globalBrushes.textWeakPassword
-          floatingStatus.pointToItem = confirmationTextField
-          floatingStatus.visible = true
-        }
-        else {
-          dPtr.pin = primaryTextField.text
-          userInputLoader.sourceComponent = acceptKeywordComponent
-          ++tabRepeater.currentTabIndex
-        }
+      onProceed: {
+        dPtr.pin = primaryTextField.text
+        ++dPtr.currentTabIndex
       }
     }
   }
@@ -143,78 +118,13 @@ FocusScope {
       id: textFieldsAndButtonColumn
       objectName: "textFieldsAndButtonColumn"
 
+      fieldName: qsTr("Keyword")
       primaryTextField.placeholderText: qsTr("Choose a Keyword")
       confirmationTextField.placeholderText: qsTr("Confirm Keyword")
 
-      primaryTextField.onActiveFocusChanged: {
-        if(!primaryTextField.activeFocus && primaryTextField.text !== "") {
-          floatingStatus.visible = false
-          clearAllStatusImages()
-
-          var result = dPtr.passwordStrength.check(primaryTextField.text)
-          switch (result.score) {
-          case 0:
-          case 1:
-            primaryTextField.showErrorImage = true
-            floatingStatus.metaText.text = qsTr("Strength:")
-            floatingStatus.infoText.text = qsTr("Weak")
-            floatingStatus.infoText.color = globalBrushes.textWeakPassword
-            floatingStatus.pointToItem = primaryTextField
-            floatingStatus.visible = true
-            break
-          case 2:
-            primaryTextField.showTickImage = true
-            floatingStatus.metaText.text = qsTr("Strength:")
-            floatingStatus.infoText.text = qsTr("Medium")
-            floatingStatus.infoText.color = globalBrushes.textMediumPassword
-            floatingStatus.pointToItem = primaryTextField
-            floatingStatus.visible = true
-            break
-          default:
-            primaryTextField.showTickImage = true
-            floatingStatus.metaText.text = qsTr("Strength:")
-            floatingStatus.infoText.text = qsTr("Strong")
-            floatingStatus.infoText.color = globalBrushes.textStrongPassword
-            floatingStatus.pointToItem = primaryTextField
-            floatingStatus.visible = true
-            break
-          }
-        }
-      }
-
-      primaryTextField.onTextChanged: {
-        if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
-          floatingStatus.visible = false
-        }
-      }
-      confirmationTextField.onTextChanged: {
-        if (floatingStatus.visible && floatingStatus.pointToItem === confirmationTextField) {
-          floatingStatus.visible = false
-        }
-      }
-
-      nextButton.onClicked: {
-        floatingStatus.visible = false
-        clearAllStatusImages()
-        if (primaryTextField.text === "") {
-          primaryTextField.showErrorImage = true
-          floatingStatus.infoText.text = qsTr("Keyword cannot be left blank")
-          floatingStatus.infoText.color = globalBrushes.textWeakPassword
-          floatingStatus.pointToItem = primaryTextField
-          floatingStatus.visible = true
-        }
-        else if (primaryTextField.text !== confirmationTextField.text) {
-          confirmationTextField.showErrorImage = true
-          floatingStatus.infoText.text = qsTr("Entries don't match")
-          floatingStatus.infoText.color = globalBrushes.textWeakPassword
-          floatingStatus.pointToItem = confirmationTextField
-          floatingStatus.visible = true
-        }
-        else {
-          dPtr.keyword = primaryTextField.text
-          userInputLoader.sourceComponent = acceptPasswordComponent
-          ++tabRepeater.currentTabIndex
-        }
+      onProceed: {
+        dPtr.keyword = primaryTextField.text
+        ++dPtr.currentTabIndex
       }
     }
   }
@@ -226,90 +136,55 @@ FocusScope {
       id: textFieldsAndButtonColumn
       objectName: "textFieldsAndButtonColumn"
 
+      fieldName: qsTr("Password")
       primaryTextField.placeholderText: qsTr("Choose a Password")
       confirmationTextField.placeholderText: qsTr("Confirm Password")
 
-      primaryTextField.onActiveFocusChanged: {
-        if (!primaryTextField.activeFocus && primaryTextField.text !== "") {
-          floatingStatus.visible = false
-          clearAllStatusImages()
-
-          var result = dPtr.passwordStrength.check(primaryTextField.text, [dPtr.keyword])
-          switch (result.score) {
-          case 0:
-          case 1:
-            primaryTextField.showErrorImage = true
-            floatingStatus.metaText.text = qsTr("Strength:")
-            floatingStatus.infoText.text = qsTr("Weak")
-            floatingStatus.infoText.color = globalBrushes.textWeakPassword
-            floatingStatus.pointToItem = primaryTextField
-            floatingStatus.visible = true
-            break
-          case 2:
-            primaryTextField.showTickImage = true
-            floatingStatus.metaText.text = qsTr("Strength:")
-            floatingStatus.infoText.text = qsTr("Medium")
-            floatingStatus.infoText.color = globalBrushes.textMediumPassword
-            floatingStatus.pointToItem = primaryTextField
-            floatingStatus.visible = true
-            break
-          default:
-            primaryTextField.showTickImage = true
-            floatingStatus.metaText.text = qsTr("Strength:")
-            floatingStatus.infoText.text = qsTr("Strong")
-            floatingStatus.infoText.color = globalBrushes.textStrongPassword
-            floatingStatus.pointToItem = primaryTextField
-            floatingStatus.visible = true
-            break
-          }
-        }
-      }
-
-      primaryTextField.onTextChanged: {
-        if (floatingStatus.visible && floatingStatus.pointToItem === primaryTextField) {
-          floatingStatus.visible = false
-        }
-      }
-      confirmationTextField.onTextChanged: {
-        if (floatingStatus.visible && floatingStatus.pointToItem === confirmationTextField) {
-          floatingStatus.visible = false
-        }
-      }
-
-      nextButton.onClicked: {
-        floatingStatus.visible = false
-        clearAllStatusImages()
-        if (primaryTextField.text === "") {
-          primaryTextField.showErrorImage = true
-          floatingStatus.infoText.text = qsTr("Password cannot be left blank")
-          floatingStatus.infoText.color = globalBrushes.textWeakPassword
-          floatingStatus.pointToItem = primaryTextField
-          floatingStatus.visible = true
-        }
-        else if (primaryTextField.text !== confirmationTextField.text) {
-          confirmationTextField.showErrorImage = true
-          floatingStatus.infoText.text = qsTr("Entries don't match")
-          floatingStatus.infoText.color = globalBrushes.textWeakPassword
-          floatingStatus.pointToItem = confirmationTextField
-          floatingStatus.visible = true
-        }
-        else {
-          accountHandlerController_.createAccount(dPtr.pin, dPtr.keyword, primaryTextField.text)
-        }
+      onProceed: {
+        accountHandlerController_.createAccount(dPtr.pin, dPtr.keyword, primaryTextField.text)
       }
     }
   }
 
-  ClickableText {
-    id: showLoginPageLabel
-    objectName: "showLoginPageLabel"
+  Loader {
+    id: clickableTextLoader
+    objectName: "clickableTextLoader"
 
     anchors {
       horizontalCenter: parent.horizontalCenter
-      bottom: parent.bottom; bottomMargin: globalProperties.accountHandlerClickableTextBottomMargin
+      bottom: parent.bottom
+      bottomMargin: globalProperties.accountHandlerClickableTextBottomMargin
     }
 
-    label.text: qsTr("Already have an account? Log In")
-    onClicked: accountHandlerController_.showLoginView()
+    sourceComponent: dPtr.currentTabIndex ?
+                       goBackComponent
+                     :
+                       showLoginPageLabelComponent
+
+    onLoaded: item.focus = true
+  }
+
+  Component {
+    id: showLoginPageLabelComponent
+
+    ClickableText {
+      id: showLoginPageLabel
+      objectName: "showLoginPageLabel"
+
+      label.text: qsTr("Already have an account? Log In")
+      onClicked: accountHandlerController_.showLoginView()
+    }
+  }
+
+  Component {
+    id: goBackComponent
+
+    ClickableText {
+      id: goBackLabel
+      objectName: "goBackLabel"
+
+      label.text: qsTr("Go back")
+      onClicked: --dPtr.currentTabIndex
+    }
   }
 }

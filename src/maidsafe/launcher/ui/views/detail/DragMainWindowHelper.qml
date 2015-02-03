@@ -26,7 +26,18 @@ MouseArea {
   property real prevMouseY
 
   acceptedButtons: Qt.LeftButton
-  onPressed:  { prevMouseX = mouseX; prevMouseY = mouseY; cursorShape = Qt.ClosedHandCursor }
-  onReleased: { cursorShape = Qt.ArrowCursor }
-  onPositionChanged: { mainWindow_.changeWindowPosition(mouseX - prevMouseX, mouseY - prevMouseY) }
+  cursorShape: containsPress ? Qt.ClosedHandCursor : Qt.ArrowCursor
+
+  onPressed:  {
+    prevMouseX = mouseX
+    prevMouseY = mouseY
+  }
+
+  onPositionChanged: {
+    var deltaX = mouseX - prevMouseX
+    var deltaY = mouseY - prevMouseY
+
+    mainWindow_.x += deltaX
+    mainWindow_.y += deltaY
+  }
 }

@@ -22,6 +22,8 @@ QtObject {
   id: globalProperties
   objectName: "globalProperties"
 
+  readonly property int windowResizerThickness: 5
+
   readonly property int fontPixelSize: 18
   readonly property int textFieldWidth: 320
   readonly property int textFieldHeight: 35
