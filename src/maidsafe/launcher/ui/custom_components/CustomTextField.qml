@@ -71,9 +71,9 @@ TextField {
       id: backgroundRect
       objectName: "backgroundRect"
 
-      implicitHeight: globalProperties.textFieldHeight
-      implicitWidth: globalProperties.textFieldWidth
-      radius: globalProperties.textFieldRadius
+      implicitHeight: globalProperties.loginTextFieldHeight
+      implicitWidth: globalProperties.loginTextFieldWidth
+      radius: globalProperties.loginRextFieldRadius
 
       Image {
         id: tickImage

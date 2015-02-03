@@ -34,5 +34,7 @@
         <file>resources/icons/window_details/mac_maximise_hover.png</file>
         <file>resources/icons/window_details/mac_minimise.png</file>
         <file>resources/icons/window_details/mac_minimise_hover.png</file>
+        <file>custom_components/ButtonBase.qml</file>
+        <file>custom_components/GreyButton.qml</file>
     </qresource>
 </RCC>

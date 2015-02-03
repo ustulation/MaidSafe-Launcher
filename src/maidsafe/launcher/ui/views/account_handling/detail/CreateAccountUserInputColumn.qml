@@ -118,7 +118,7 @@ FocusScope {
     id: textFieldsAndButtonColumn
     objectName: "textFieldsAndButtonColumn"
 
-    spacing: globalProperties.textFieldVerticalSpacing
+    spacing: globalProperties.loginTextFieldVerticalSpacing
 
     CustomTextField {
       id: primaryTextField

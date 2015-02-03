@@ -45,7 +45,7 @@ FocusScope {
     anchors {
       horizontalCenter: parent.horizontalCenter
       bottom: userInputLoader.top
-      bottomMargin: globalProperties.textFieldHeight
+      bottomMargin: globalProperties.loginTextFieldHeight
     }
 
     spacing: 15

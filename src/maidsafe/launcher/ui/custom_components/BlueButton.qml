@@ -17,52 +17,24 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
-import QtQuick.Controls 1.3
-import QtQuick.Controls.Styles 1.3
 
-Button {
-  id: buttonControl
-  objectName: "buttonControl"
+ButtonBase {
+  id: buttonBaseRoot
+  objectName: "buttonBaseRoot"
 
-  property bool underlineLabelOnFocus: true
-  property bool italiciseLabelOnFocus: false
+  backgroundComponent: Rectangle {
+    id: backgroundRect
+    objectName: "backgroundRect"
 
-  Keys.onEnterPressed: clicked();
-  Keys.onSpacePressed: clicked();
-  Keys.onReturnPressed: clicked();
+    implicitHeight: globalProperties.loginPageNextButtonHeight
+    implicitWidth: globalProperties.loginPageNextButtonWidth
+    radius: globalProperties.loginPageNextButtonRadius
+    antialiasing: true
 
-  style: ButtonStyle {
-    id: buttonStyle
-    objectName: "buttonStyle"
-
-    background: Rectangle {
-      id: backgroundRect
-      objectName: "backgroundRect"
-
-      implicitHeight: globalProperties.textFieldHeight
-      implicitWidth: globalProperties.textFieldWidth
-      radius: globalProperties.textFieldRadius
-      antialiasing: true
-
-      color: {
-        if (control.pressed) globalBrushes.buttonPressedBlue
-        else if (control.hovered || control.activeFocus) globalBrushes.buttonHoveredBlue
-        else globalBrushes.buttonDefaultBlue
-      }
-    }
-
-    label: CustomLabel {
-      id: buttonLabel
-      objectName: "buttonLabel"
-
-      text: control.text
-      verticalAlignment: Qt.AlignVCenter
-      horizontalAlignment: Qt.AlignHCenter
-
-      font {
-        italic: control.italiciseLabelOnFocus && control.activeFocus ? true : false
-        underline: control.underlineLabelOnFocus && control.activeFocus ? true : false
-      }
+    color: {
+      if (buttonBaseRoot.pressed) globalBrushes.buttonPressedBlue
+      else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) globalBrushes.buttonHoveredBlue
+      else globalBrushes.buttonDefaultBlue
     }
   }
 }

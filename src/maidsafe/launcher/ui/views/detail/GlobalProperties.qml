@@ -25,12 +25,16 @@ QtObject {
   readonly property int windowResizerThickness: 5
 
   readonly property int fontPixelSize: 18
-  readonly property int textFieldWidth: 320
-  readonly property int textFieldHeight: 35
-  readonly property int textFieldRadius: 5
-  readonly property int textFieldVerticalSpacing: 15
+  readonly property int loginTextFieldWidth: 320
+  readonly property int loginTextFieldHeight: 35
+  readonly property int loginRextFieldRadius: 5
+  readonly property int loginTextFieldVerticalSpacing: 15
 
   readonly property int loginButtonBottomMargin: 130
   readonly property int createAccountNextButtonBottomMargin: 130
   readonly property int accountHandlerClickableTextBottomMargin: 45
+
+  readonly property int loginPageNextButtonWidth: loginTextFieldWidth
+  readonly property int loginPageNextButtonHeight: loginTextFieldHeight
+  readonly property int loginPageNextButtonRadius: loginRextFieldRadius
 }

@@ -50,7 +50,7 @@ FocusScope {
       bottomMargin: globalProperties.loginButtonBottomMargin
     }
 
-    spacing: globalProperties.textFieldVerticalSpacing
+    spacing: globalProperties.loginTextFieldVerticalSpacing
 
     Repeater {
       id: textFieldRepeater
