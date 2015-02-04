@@ -43,7 +43,7 @@ AccountHandlerController::AccountHandlerController(MainWindow& main_window,
              "Account Handler Model must implement signal void CreateAccountResultAvailable()");
 }
 
-AccountHandlerController::~AccountHandlerController() MAIDSAFE_NOEXCEPT {
+AccountHandlerController::~AccountHandlerController() {
   if (future_.valid()) {
     future_.wait();
   }

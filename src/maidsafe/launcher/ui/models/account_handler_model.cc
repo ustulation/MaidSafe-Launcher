@@ -28,7 +28,7 @@ namespace ui {
 
 AccountHandlerModel::AccountHandlerModel(QObject* parent) : QObject{parent} {}
 
-AccountHandlerModel::~AccountHandlerModel() MAIDSAFE_NOEXCEPT = default;
+AccountHandlerModel::~AccountHandlerModel() = default;
 
 std::unique_ptr<Launcher> AccountHandlerModel::Login(const QString& /*pin*/,
                                                      const QString& /*keyword*/,

@@ -35,7 +35,7 @@ MainController::MainController(QObject* parent) : QObject{parent} {
   QTimer::singleShot(0, this, SLOT(EventLoopStarted()));
 }
 
-MainController::~MainController() MAIDSAFE_NOEXCEPT = default;
+MainController::~MainController() = default;
 
 void MainController::EventLoopStarted() {
   main_window_.reset(new MainWindow);
@@ -85,10 +85,10 @@ void MainController::UnhandledException() {
 
 void MainController::RegisterQmlTypes() const {
   qmlRegisterUncreatableType<MainController>(
-      "MainController", 1, 0, "MainController",
+      "SAFEAppLauncher.MainController", 1, 0, "MainController",
       "Error!! Attempting to access uncreatable type - MainController");
   qmlRegisterUncreatableType<AccountHandlerController>(
-      "AccountHandler", 1, 0, "AccountHandlerController",
+      "SAFEAppLauncher.AccountHandler", 1, 0, "AccountHandlerController",
       "Error!! Attempting to access uncreatable type - AccountHandlerController");
 }
 

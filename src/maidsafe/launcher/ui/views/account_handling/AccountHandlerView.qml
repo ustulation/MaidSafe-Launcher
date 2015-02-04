@@ -17,7 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
-import AccountHandler 1.0
+import SAFEAppLauncher.AccountHandler 1.0
 
 import "../../custom_components"
 

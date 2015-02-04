@@ -94,7 +94,7 @@ FocusScope {
         leftMargin: 3
         verticalCenter: parent.verticalCenter
       }
-      source: "/resources/images/create_tick.png"
+      source: "/resources/icons/search_icon.png"
     }
   }
 }

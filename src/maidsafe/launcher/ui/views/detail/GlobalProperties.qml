@@ -46,4 +46,6 @@ QtObject {
   readonly property int addAppCancelButtonWidth: 142
   readonly property int addAppCancelButtonHeight: loginTextFieldHeight
   readonly property int addAppCancelButtonRadius: loginRextFieldRadius
+  readonly property int addAppCenterAreaTextSize: 15
+  readonly property int addAppTitleTextSize: 12
 }

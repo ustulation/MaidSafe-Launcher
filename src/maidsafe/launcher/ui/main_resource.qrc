@@ -39,5 +39,7 @@
         <file>custom_components/SearchField.qml</file>
         <file>views/add_app/detail/BlueButton.qml</file>
         <file>views/add_app/detail/GreyButton.qml</file>
+        <file>views/add_app/detail/Brushes.qml</file>
+        <file>resources/icons/search_icon.png</file>
     </qresource>
 </RCC>

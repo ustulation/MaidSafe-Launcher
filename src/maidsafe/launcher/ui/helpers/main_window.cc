@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWindow* parent) : QQuickView{parent} {
 #endif
 }
 
-MainWindow::~MainWindow() MAIDSAFE_NOEXCEPT = default;
+MainWindow::~MainWindow() = default;
 
 void MainWindow::centerToScreen() {
   auto screen_width(QDesktopWidget{}.screen()->width());

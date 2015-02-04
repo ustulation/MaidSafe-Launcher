@@ -35,11 +35,9 @@ ButtonBase {
     color: {
       if (buttonBaseRoot.pressed) {
         globalBrushes.buttonAddPageDefaultBlue
-      }
-      else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) {
+      } else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) {
         globalBrushes.buttonAddPageHoveredBlue
-      }
-      else {
+      } else {
         globalBrushes.buttonAddPageDefaultBlue
       }
     }

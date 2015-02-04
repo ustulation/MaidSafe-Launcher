@@ -20,7 +20,7 @@ import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Controls.Styles 1.3
 
-import MainController 1.0
+import SAFEAppLauncher.MainController 1.0
 
 import "./detail"
 import "../custom_components"

@@ -44,10 +44,12 @@ class MainController : public QObject {
   Q_PROPERTY(MainViews currentView READ currentView NOTIFY currentViewChanged FINAL)
 
  public:
-  enum MainViews { HandleAccount };
+  enum MainViews {
+    HandleAccount
+  };
 
   explicit MainController(QObject* parent = 0);
-  ~MainController() MAIDSAFE_NOEXCEPT override;
+  ~MainController() override;
 
   MainViews currentView() const;
   void SetCurrentView(const MainViews new_current_view);

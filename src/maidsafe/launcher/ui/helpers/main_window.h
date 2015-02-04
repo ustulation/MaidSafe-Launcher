@@ -35,7 +35,7 @@ class MainWindow : public QQuickView {
 
  public:
   explicit MainWindow(QWindow* parent = nullptr);
-  ~MainWindow() MAIDSAFE_NOEXCEPT override;
+  ~MainWindow() override;
 
   Q_INVOKABLE void centerToScreen();
 

@@ -47,7 +47,7 @@ class AccountHandlerController : public QObject {
   enum AccountHandlingViews { LoginView, CreateAccountView, };
 
   AccountHandlerController(MainWindow& main_window, QObject* parent);
-  ~AccountHandlerController() MAIDSAFE_NOEXCEPT override;
+  ~AccountHandlerController() override;
   AccountHandlerController(AccountHandlerController&&) = delete;
   AccountHandlerController(const AccountHandlerController&) = delete;
   AccountHandlerController& operator=(AccountHandlerController&&) = delete;

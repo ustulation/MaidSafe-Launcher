@@ -41,7 +41,7 @@ class AccountHandlerModel : public QObject {
 
  public:
   explicit AccountHandlerModel(QObject* parent = nullptr);
-  ~AccountHandlerModel() MAIDSAFE_NOEXCEPT override;
+  ~AccountHandlerModel() override;
 
   std::unique_ptr<Launcher> Login(const QString& pin, const QString& keyword,
                                   const QString& password);
