@@ -94,12 +94,15 @@ FocusScope {
       anchors.fill: parent
 
       source: {
-        if (accountHandlerController_.currentView === AccountHandlerController.CreateAccountView)
+        if (accountHandlerController_.currentView === AccountHandlerController.CreateAccountView) {
           "CreateAccount.qml"
-        else if (accountHandlerController_.currentView === AccountHandlerController.LoginView)
+        }
+        else if (accountHandlerController_.currentView === AccountHandlerController.LoginView) {
           "Login.qml"
-        else
+        }
+        else {
           ""
+        }
       }
 
       focus: true

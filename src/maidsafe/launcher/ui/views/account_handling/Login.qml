@@ -18,7 +18,6 @@
 
 import QtQuick 2.4
 import QtQuick.Controls 1.3
-import QtQuick.Controls.Styles 1.3
 
 import "./detail"
 import "../../custom_components"
@@ -76,7 +75,7 @@ FocusScope {
       }
     }
 
-    BlueButton {
+    AccountHandlerBlueButton {
       id: loginButton
       objectName: "loginButton"
 

@@ -15,7 +15,6 @@
         <file>views/detail/DragMainWindowHelper.qml</file>
         <file>views/detail/GlobalProperties.qml</file>
         <file>views/detail/GlobalBrushes.qml</file>
-        <file>custom_components/BlueButton.qml</file>
         <file>custom_components/CustomLabel.qml</file>
         <file>custom_components/CustomText.qml</file>
         <file>custom_components/ClickableText.qml</file>
@@ -35,6 +34,10 @@
         <file>resources/icons/window_details/mac_minimise.png</file>
         <file>resources/icons/window_details/mac_minimise_hover.png</file>
         <file>custom_components/ButtonBase.qml</file>
-        <file>custom_components/GreyButton.qml</file>
+        <file>views/account_handling/detail/AccountHandlerBlueButton.qml</file>
+        <file>views/add_app/AddApplicationView.qml</file>
+        <file>custom_components/SearchField.qml</file>
+        <file>views/add_app/detail/BlueButton.qml</file>
+        <file>views/add_app/detail/GreyButton.qml</file>
     </qresource>
 </RCC>

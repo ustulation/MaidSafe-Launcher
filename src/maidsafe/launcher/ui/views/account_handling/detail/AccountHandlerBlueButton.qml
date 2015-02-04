@@ -17,6 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
+import "../../../custom_components"
 
 ButtonBase {
   id: buttonBaseRoot
@@ -32,9 +33,15 @@ ButtonBase {
     antialiasing: true
 
     color: {
-      if (buttonBaseRoot.pressed) globalBrushes.buttonPressedGrey
-      else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) globalBrushes.buttonHoveredGrey
-      else globalBrushes.buttonDefaultGrey
+      if (buttonBaseRoot.pressed) {
+        globalBrushes.buttonLoginPagePressedBlue
+      }
+      else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) {
+        globalBrushes.buttonLoginPageHoveredBlue
+      }
+      else {
+        globalBrushes.buttonLoginPageDefaultBlue
+      }
     }
   }
 }

@@ -177,7 +177,7 @@ FocusScope {
       }
     }
 
-    BlueButton {
+    AccountHandlerBlueButton {
       id: nextButton
       objectName: "nextButton"
 

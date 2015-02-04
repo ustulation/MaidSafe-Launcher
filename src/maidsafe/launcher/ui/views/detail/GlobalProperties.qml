@@ -37,4 +37,13 @@ QtObject {
   readonly property int loginPageNextButtonWidth: loginTextFieldWidth
   readonly property int loginPageNextButtonHeight: loginTextFieldHeight
   readonly property int loginPageNextButtonRadius: loginRextFieldRadius
+
+  readonly property int addAppSearchFieldWidth: 250
+  readonly property int addAppSearchFieldHeight: 20
+  readonly property int addAppSearchFieldRadius: 3
+  readonly property int addAppSearchFieldFontPixelSize: 12
+
+  readonly property int addAppCancelButtonWidth: 142
+  readonly property int addAppCancelButtonHeight: loginTextFieldHeight
+  readonly property int addAppCancelButtonRadius: loginRextFieldRadius
 }

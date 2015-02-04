@@ -53,6 +53,7 @@ TextField {
     pixelSize: globalProperties.fontPixelSize
     family: globalFontFamily.name
   }
+
   horizontalAlignment: TextInput.AlignHCenter
   verticalAlignment: TextInput.AlignVCenter
 
@@ -74,32 +75,32 @@ TextField {
       implicitHeight: globalProperties.loginTextFieldHeight
       implicitWidth: globalProperties.loginTextFieldWidth
       radius: globalProperties.loginRextFieldRadius
-
-      Image {
-        id: tickImage
-        objectName: "tickImage"
-
-        anchors {
-          right: parent.right
-          rightMargin: 3
-          verticalCenter: parent.verticalCenter
-        }
-        source: "/resources/images/create_tick.png"
-        visible: textField.showTickImage
-      }
-
-      Image {
-        id: errorImage
-        objectName: "errorImage"
-
-        anchors {
-          right: parent.right
-          rightMargin: 3
-          verticalCenter: parent.verticalCenter
-        }
-        source: "/resources/images/create_error.png"
-        visible: textField.showErrorImage
-      }
     }
+  }
+
+  Image {
+    id: tickImage
+    objectName: "tickImage"
+
+    anchors {
+      right: parent.right
+      rightMargin: 3
+      verticalCenter: parent.verticalCenter
+    }
+    source: "/resources/images/create_tick.png"
+    visible: textField.showTickImage
+  }
+
+  Image {
+    id: errorImage
+    objectName: "errorImage"
+
+    anchors {
+      right: parent.right
+      rightMargin: 3
+      verticalCenter: parent.verticalCenter
+    }
+    source: "/resources/images/create_error.png"
+    visible: textField.showErrorImage
   }
 }

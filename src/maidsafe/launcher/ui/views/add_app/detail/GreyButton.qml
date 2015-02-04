@@ -17,6 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
+import "../../../custom_components"
 
 ButtonBase {
   id: buttonBaseRoot
@@ -26,15 +27,21 @@ ButtonBase {
     id: backgroundRect
     objectName: "backgroundRect"
 
-    implicitHeight: globalProperties.loginPageNextButtonHeight
-    implicitWidth: globalProperties.loginPageNextButtonWidth
-    radius: globalProperties.loginPageNextButtonRadius
+    implicitHeight: globalProperties.addAppCancelButtonHeight
+    implicitWidth: globalProperties.addAppCancelButtonWidth
+    radius: globalProperties.addAppCancelButtonRadius
     antialiasing: true
 
     color: {
-      if (buttonBaseRoot.pressed) globalBrushes.buttonPressedBlue
-      else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) globalBrushes.buttonHoveredBlue
-      else globalBrushes.buttonDefaultBlue
+      if (buttonBaseRoot.pressed) {
+        globalBrushes.buttonAddPageDefaultGrey
+      }
+      else if (buttonBaseRoot.hovered || buttonBaseRoot.activeFocus) {
+        globalBrushes.buttonAddPageHoveredGrey
+      }
+      else {
+        globalBrushes.buttonAddPageDefaultGrey
+      }
     }
   }
 }

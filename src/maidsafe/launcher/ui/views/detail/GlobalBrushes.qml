@@ -36,11 +36,17 @@ QtObject {
   readonly property color labelSelected: "#1d6499"
   readonly property color labelNotSelected: "#ceebf4"
 
-  readonly property color buttonDefaultBlue: "#1d6499"
-  readonly property color buttonHoveredBlue: "#2a81b7"
-  readonly property color buttonPressedBlue: "#124360"
+  readonly property color buttonLoginPageDefaultBlue: "#1d6499"
+  readonly property color buttonLoginPageHoveredBlue: "#2a81b7"
+  readonly property color buttonLoginPagePressedBlue: "#124360"
 
-  readonly property color buttonDefaultGrey: "#808080"
-  readonly property color buttonHoveredGrey: "#aaaaaa"
-  readonly property color buttonPressedGrey: "#404040"
+  readonly property color buttonAddPageDefaultBlue: "#7db9ef"
+  readonly property color buttonAddPageHoveredBlue: "#aad6f7"
+  readonly property color buttonAddPagePressedBlue: "#548bb5"
+
+  readonly property color buttonAddPageDefaultGrey: "#b3b3b3"
+  readonly property color buttonAddPageHoveredGrey: "#d6d6d6"
+  readonly property color buttonAddPagePressedGrey: "#7a7a7a"
+
+  readonly property color addAppPageBackground: "#494949"
 }
