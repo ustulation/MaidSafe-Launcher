@@ -17,7 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
-import SAFEAppLauncher.AccountHandler 1.0
+import SAFEAppLauncher.AccountHandlerController 1.0
 
 import "./detail"
 import "../../custom_components"
@@ -46,11 +46,11 @@ FocusScope {
     Component.onCompleted: {
       mainWindow_.width = implicitWidth
       mainWindow_.minimumWidth = implicitWidth
-      mainWindow_.maximumWidth = implicitWidth
+//      mainWindow_.maximumWidth = implicitWidth
 
       mainWindow_.height = implicitHeight
       mainWindow_.minimumHeight = implicitHeight
-      mainWindow_.maximumHeight = implicitHeight + correctionFactor
+//      mainWindow_.maximumHeight = implicitHeight + correctionFactor
 
       if (Qt.platform.os !== "linux") {
         mainWindowTitleBar.maximiseRestoreEnabled = false

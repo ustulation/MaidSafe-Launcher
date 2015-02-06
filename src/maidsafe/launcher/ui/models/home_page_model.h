@@ -1,3 +1,21 @@
+/*  Copyright 2015 MaidSafe.net limited
+
+    This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,
+    version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which
+    licence you accepted on initial access to the Software (the "Licences").
+
+    By contributing code to the MaidSafe Software, or to this project generally, you agree to be
+    bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root
+    directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also
+    available at: http://www.maidsafe.net/licenses
+
+    Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed
+    under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+    OF ANY KIND, either express or implied.
+
+    See the Licences for the specific language governing permissions and limitations relating to
+    use of the MaidSafe Software.                                                                 */
+
 #ifndef HOME_PAGE_MODEL_H
 #define HOME_PAGE_MODEL_H
 
@@ -61,15 +79,12 @@ class HomePageModel : public QAbstractListModel {
   };
 
  public:
-  explicit HomePageModel(QObject *parent = nullptr);
+  explicit HomePageModel(QObject* parent = nullptr);
 
   ModelRoleContainer_t roleNames() const override;
   int rowCount(const QModelIndex& = QModelIndex{}) const override;
   QVariant data(const QModelIndex& index, int role /*= Qt::DisplayRole */) const override;
 
- signals:
-
- public slots:
   void AddData(const QString& name, const QColor& color);
   void RemoveData(const QString& name);
 
@@ -77,9 +92,25 @@ class HomePageModel : public QAbstractListModel {
   void UpdateData(const QString& name, const QString& new_name);
   void UpdateData(const QString& name, const QColor& new_color);
 
+  void MoveData(int index_from, int index_to);
+
+  void StartRandomAdd();
+  void StopRandomAdd();
+
+  void StartRandomDelete();
+  void StopRandomDelete();
+
+  void StartRandomUpdate();
+  void StopRandomUpdate();
+
+ public slots:
+  void OnTimeout();
+
  private:
   ModelRoleContainer_t roles_;
   std::vector<Data> data_collection_;
+
+  QTimer timer_;
 };
 
 }  // namespace ui

@@ -38,5 +38,6 @@
         <file>custom_components/GreyButton.qml</file>
         <file>views/account_handling/detail/AccountHandlerBrushes.qml</file>
         <file>views/account_handling/detail/AccountHandlerProperties.qml</file>
+        <file>views/home_page/HomePageView.qml</file>
     </qresource>
 </RCC>

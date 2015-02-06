@@ -46,6 +46,7 @@ class MainController : public QObject {
  public:
   enum MainViews {
     HandleAccount,
+    HomePage,
   };
 
   explicit MainController(QObject* parent = nullptr);
@@ -64,6 +65,7 @@ class MainController : public QObject {
 
  signals: // NOLINT - Viv
   void InvokeAccountHandlerController();
+  void InvokeHomePageController();
   void currentViewChanged(MainViews arg);
 
  private slots:  // NOLINT - Viv
@@ -80,6 +82,7 @@ class MainController : public QObject {
   std::unique_ptr<MainWindow> main_window_;
   APIModel* api_model_{nullptr};
   QObject* account_handler_controller_{nullptr};
+  QObject* home_page_controller_{nullptr};
 
   MainViews current_view_{HandleAccount};
 };

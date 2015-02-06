@@ -54,10 +54,15 @@ Item {
     objectName: "mainWindowLoader"
 
     anchors.fill: parent
-    source: mainController_.currentView === MainController.HandleAccount ?
-              "account_handling/AccountHandlerView.qml"
-            :
-              ""
+    source: {
+      if (mainController_.currentView === MainController.HandleAccount) {
+        "account_handling/AccountHandlerView.qml"
+      } else if (mainController_.currentView === MainController.HomePage) {
+        "home_page/HomePageView.qml"
+      } else {
+        ""
+      }
+    }
 
     focus: true
     onLoaded: item.focus = true
