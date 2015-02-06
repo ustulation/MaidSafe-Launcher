@@ -33,7 +33,7 @@ std::unique_ptr<Launcher> AccountHandlerModel::Login(const QString& /*pin*/,
                                                      const QString& /*keyword*/,
                                                      const QString& /*password*/) {
   on_scope_exit sig{[this] { emit LoginResultAvailable(); }};
-  static_cast<void>(sig);
+//  static_cast<void>(sig);
   //  return Launcher::Login(pin.toStdString(), keyword.toStdString(), password.toStdString());
   std::unique_ptr<Launcher> launcher{new Launcher};
   return std::move(launcher);
