@@ -35,6 +35,7 @@ HomePageModel::HomePageModel(QObject* parent)
         Data{"Five", QColor{0, 255, 255}}} {
   roles_[DataRole] = "data";
   timer_.setInterval(3000);
+  connect(&timer_, SIGNAL(timeout()), this, SLOT(OnTimeout()));
 }
 
 HomePageModel::ModelRoleContainer_t HomePageModel::roleNames() const {
@@ -51,7 +52,8 @@ QVariant HomePageModel::data(const QModelIndex& index, int role /*= Qt::DisplayR
   if (index.row() >= 0 && index.row() < static_cast<int>(data_collection_.size())) {
     switch (role) {
       case DataRole:
-        return_val = QVariant::fromValue(const_cast<QObject*>(static_cast<const QObject*>(&data_collection_[index.row()])));
+        return_val = QVariant::fromValue(
+              const_cast<QObject*>(static_cast<const QObject*>(&data_collection_[index.row()])));
         break;
       default:
         break;
@@ -106,43 +108,43 @@ void HomePageModel::UpdateData(const QString& name, const QColor& new_color) {
 }
 
 void HomePageModel::OnTimeout() {
-  auto val(qrand() % 2);
-  static_cast<void>(val);
+  auto id(qrand() % 256);
+  auto r(qrand() % 256);
+  auto g(qrand() % 256);
+  auto b(qrand() % 256);
+  AddData(QString{"Id: %1"}.arg(id), QColor{r, g, b});
 }
 
 void HomePageModel::MoveData(int index_from, int index_to) {
   int size = data_collection_.size();
   if (index_from >= 0 && index_from < size &&
-      index_to   >= 0 && index_to < size   &&
+      index_to   >= 0 && index_to   < size &&
       index_from != index_to) {
-//    beginRemoveRows(QModelIndex{}, index_from, index_from);
-//    auto temp_data(data_collection_[index_from]);
-//    data_collection_.erase(data_collection_.begin() + index_from);
-//    endRemoveRows();
+    auto row_parent(QModelIndex{});
+    auto temp_data(std::move(data_collection_[index_from]));
 
+    if (index_from > index_to) {
+      if(beginMoveRows(row_parent, index_from, index_from, row_parent, index_to)) {
+//        for (int i = index_from; i > index_to; --i) {
+//          data_collection_[i] = std::move(data_collection_[i - 1]);
+//        }
+      }
+    } else if (beginMoveRows(row_parent, index_from, index_from, row_parent, index_to + 1)) {
+//      for (int i = index_from; i < index_to; ++i) {
+//        data_collection_[i] = std::move(data_collection_[i + 1]);
+//      }
+    }
+//    data_collection_[index_to] = std::move(temp_data);
+    endMoveRows();
 
-//    int subtraction_factor{index_from > index_to ? 0 : 1};
-//    int actual_insertion_index{index_to - subtraction_factor};
-//    beginInsertRows(QModelIndex{}, actual_insertion_index, actual_insertion_index);
-//    data_collection_.insert(data_collection_.begin() + (index_to - subtraction_factor),
-//                            std::move(temp_data));
-//    endInsertRows();
-
-//    beginMoveRows(QModelIndex{}, index_from, index_from, QModelIndex{}, index_to);
-    beginResetModel();
-    auto temp_data(data_collection_[index_from]);
-    data_collection_.erase(data_collection_.begin() + index_from);
-    int subtraction_factor = index_from > index_to ? 0 : 1;
-    data_collection_.insert(data_collection_.begin() + (index_to - subtraction_factor),
-                            std::move(temp_data));
-//    endMoveRows();
-
-    endResetModel();
+//    for (auto& data: data_collection_) {
+//      qDebug() << data.name();
+//    }
   }
 }
 
 void HomePageModel::StartRandomAdd() {
-
+  timer_.start();
 }
 
 void HomePageModel::StopRandomAdd() {

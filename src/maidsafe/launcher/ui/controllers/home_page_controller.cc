@@ -53,7 +53,7 @@ void HomePageController::move(int index_from, int index_to) {
 }
 
 void HomePageController::Invoke() {
-
+//  home_page_model_->StartRandomAdd();
 }
 
 }  // namespace ui

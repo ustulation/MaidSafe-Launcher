@@ -17,6 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 import QtQuick 2.4
+import QtQuick.Controls 1.3
 import SAFEAppLauncher.HomePageController 1.0
 
 import "../../custom_components"
@@ -41,68 +42,146 @@ FocusScope {
       margins: 20
     }
 
+    ExclusiveGroup {
+      id: exclusiveGroup
+    }
+
     GridView {
       anchors.fill: parent
       model: homePageController_.homePageModel
 
-      delegate: Rectangle {
+      moveDisplaced: Transition {
+        NumberAnimation {
+          properties: "x,y"
+          duration: 300
+        }
+      }
+
+      delegate: Item {
+        id: delegateItem
+
         height: 50
         width: 50
-        color: model.data.objColor
 
-        Text {
-          color: "#ffffff"
-          anchors.fill: parent
-          verticalAlignment: Text.AlignVCenter
-          horizontalAlignment: Text.AlignHCenter
-          elide: Text.ElideMiddle
+        Rectangle {
+          id: delegateRect
 
-          text: model.data.name
-        }
+          property int index: model.index
 
-        MouseArea {
-          id: mouseArea
-          anchors.fill: parent
+          opacity: mouseArea.drag.active ? .4 : 1
+          Drag.active: mouseArea.drag.active
+          Drag.hotSpot.x: width / 2
+          Drag.hotSpot.y: height / 2
 
-          drag.target: dragme
+          color: model.data.objColor
 
-          onReleased: {
-            dragme.Drag.drop()
+          anchors {
+            top: parent.top
+            left: parent.left
+          }
+
+          width: 50
+          height: 50
+
+          states: State {
+            when: mouseArea.drag.active
+            ParentChange {
+              target: delegateRect
+              parent: mainWindowItem
+            }
+            AnchorChanges {
+              target: delegateRect
+              anchors {
+                top: undefined
+                left: undefined
+              }
+            }
+          }
+
+          Text {
+            color: "#ffffff"
+            anchors.fill: parent
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideMiddle
+
+            text: model.data.name
+          }
+
+          MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+
+            property bool checked: false
+
+            Component.onCompleted: {
+              exclusiveGroup.bindCheckable(mouseArea)
+            }
+
+            Binding on checked {
+              when: mouseArea.drag.active
+              value: false
+            }
+
+            drag.target: parent
+            onPressed: checked = !checked
           }
 
           Rectangle {
-            id: dragme
-
-            property int index: model.index
-
             anchors {
-              left: parent.left
-              top: parent.top
+              bottom: detailsRect.top
+              bottomMargin: -height / 2
+              horizontalCenter: parent.horizontalCenter
             }
 
-            height: mouseArea.height
-            width: mouseArea.width
-            color: "#808080"
-            opacity: .5
+            width: 10
+            height: width
 
-            Drag.active: mouseArea.drag.active
-            Drag.hotSpot.x: width / 2
-            Drag.hotSpot.y: height / 2
+            rotation: 45
 
-            visible: mouseArea.drag.active
+            color: "transparent"
+            border {
+              color: "grey"
+              width: 1
+            }
 
-            states: State {
-              when: mouseArea.drag.active
-              ParentChange {
-                target: dragme
-                parent: mainWindowItem
+            visible: detailsRect.visible
+          }
+
+          Rectangle {
+            id: detailsRect
+
+            anchors {
+              top: parent.bottom
+              topMargin: 10
+            }
+
+            color: "white"
+
+            border {
+              color: "grey"
+              width: 1
+            }
+
+            height: 200
+            width: focusScopeRoot.width - 34
+            visible: mouseArea.checked
+
+            onVisibleChanged: {
+              x = mapFromItem(focusScopeRoot, 17, 0).x
+            }
+
+            Column {
+              anchors.fill: parent
+              Text {
+                anchors.leftMargin: 100
+                text: model.data.name
+                color: "blue"
               }
-              AnchorChanges {
-                target: dragme
-                anchors {
-                  left: undefined
-                  top: undefined
-                }
+              Text {
+                color: "green"
+                anchors.leftMargin: 100
+                text: model.data.objColor
               }
             }
           }
@@ -112,26 +191,8 @@ FocusScope {
           id: dropArea
           anchors.fill: parent
 
-          onDropped: {
-            console.log("Dropped from", drag.source.index, "to", model.index)
+          onEntered: {
             homePageController_.move(drag.source.index, model.index)
-          }
-
-          Rectangle {
-            anchors.fill: parent
-
-            visible: dropArea.containsDrag
-            opacity: .5
-
-            SequentialAnimation on color {
-              alwaysRunToEnd: true
-              loops: Animation.Infinite
-              running: dropArea.containsDrag
-              ColorAnimation { from: "white"; to: "black"; duration: 300 }
-              PauseAnimation { duration: 100 }
-              ColorAnimation { from: "black"; to: "white"; duration: 300 }
-              PauseAnimation { duration: 100 }
-            }
           }
         }
       }
