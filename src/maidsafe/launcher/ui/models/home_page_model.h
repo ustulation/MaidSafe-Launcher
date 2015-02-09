@@ -28,11 +28,18 @@ namespace launcher {
 
 namespace ui {
 
+
+// Appinfo
+
 class Data : public QObject {
   Q_OBJECT
 
   Q_PROPERTY(QColor objColor READ objColor WRITE setObjColor NOTIFY objColorChanged FINAL)
   Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
+  Q_PROPERTY(QString prop0 READ prop0 WRITE setProp0 NOTIFY prop0Changed FINAL)
+  Q_PROPERTY(QString prop1 READ prop1 WRITE setProp1 NOTIFY prop1Changed FINAL)
+  Q_PROPERTY(QString prop2 READ prop2 WRITE setProp2 NOTIFY prop2Changed FINAL)
+  Q_PROPERTY(QString prop3 READ prop3 WRITE setProp3 NOTIFY prop3Changed FINAL)
 
  public:
   template<typename T, typename U>
@@ -64,9 +71,30 @@ class Data : public QObject {
   void setName(const QString new_name) { if (new_name != name_) { name_ = new_name; emit nameChanged(name_); } }
   Q_SIGNAL void nameChanged(QString new_name);
 
+  QString prop0() const { return prop0_; }
+  void setProp0(const QString new_name) { if (new_name != prop0_) { prop0_ = new_name; emit prop0Changed(prop0_); } }
+  Q_SIGNAL void prop0Changed(QString new_name);
+
+  QString prop1() const { return prop1_; }
+  void setProp1(const QString new_name) { if (new_name != prop1_) { prop1_ = new_name; emit prop1Changed(prop1_); } }
+  Q_SIGNAL void prop1Changed(QString new_name);
+
+  QString prop2() const { return prop2_; }
+  void setProp2(const QString new_name) { if (new_name != prop2_) { prop2_ = new_name; emit prop0Changed(prop2_); } }
+  Q_SIGNAL void prop2Changed(QString new_name);
+
+  QString prop3() const { return prop3_; }
+  void setProp3(const QString new_name) { if (new_name != prop3_) { prop3_ = new_name; emit prop3Changed(prop3_); } }
+  Q_SIGNAL void prop3Changed(QString new_name);
+
  private:
   QString name_{tr("Default")};
   QColor color_{255, 0, 0};
+
+  QString prop0_{tr("Some stuff to be displayed.")};
+  QString prop1_{tr("Some other stuff to be displayed.")};
+  QString prop2_{tr("This is yet another stuff that is to be displayed.")};
+  QString prop3_{tr("This is the last thing that is meant to be displayed.")};
 };
 
 class HomePageModel : public QAbstractListModel {
@@ -76,6 +104,12 @@ class HomePageModel : public QAbstractListModel {
 
   enum {
     DataRole = Qt::UserRole + 1,
+    NameRole,
+    ColorRole,
+    Prop0Role,
+    Prop1Role,
+    Prop2Role,
+    Prop3Role,
   };
 
  public:

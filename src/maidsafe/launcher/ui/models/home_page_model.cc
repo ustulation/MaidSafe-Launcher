@@ -34,6 +34,13 @@ HomePageModel::HomePageModel(QObject* parent)
         Data{"Four", QColor{255, 0, 255}},
         Data{"Five", QColor{0, 255, 255}}} {
   roles_[DataRole] = "data";
+  roles_[NameRole] = "name";
+  roles_[ColorRole] = "color";
+  roles_[Prop0Role] = "prop0";
+  roles_[Prop1Role] = "prop1";
+  roles_[Prop2Role] = "prop2";
+  roles_[Prop3Role] = "prop3";
+
   timer_.setInterval(3000);
   connect(&timer_, SIGNAL(timeout()), this, SLOT(OnTimeout()));
 }
@@ -54,6 +61,24 @@ QVariant HomePageModel::data(const QModelIndex& index, int role /*= Qt::DisplayR
       case DataRole:
         return_val = QVariant::fromValue(
               const_cast<QObject*>(static_cast<const QObject*>(&data_collection_[index.row()])));
+        break;
+      case NameRole:
+        return_val = QVariant::fromValue(data_collection_[index.row()].name());
+        break;
+      case ColorRole:
+        return_val = QVariant::fromValue(data_collection_[index.row()].objColor());
+        break;
+      case Prop0Role:
+        return_val = QVariant::fromValue(data_collection_[index.row()].prop0());
+        break;
+      case Prop1Role:
+        return_val = QVariant::fromValue(data_collection_[index.row()].prop1());
+        break;
+      case Prop2Role:
+        return_val = QVariant::fromValue(data_collection_[index.row()].prop2());
+        break;
+      case Prop3Role:
+        return_val = QVariant::fromValue(data_collection_[index.row()].prop3());
         break;
       default:
         break;
@@ -125,16 +150,16 @@ void HomePageModel::MoveData(int index_from, int index_to) {
 
     if (index_from > index_to) {
       if(beginMoveRows(row_parent, index_from, index_from, row_parent, index_to)) {
-//        for (int i = index_from; i > index_to; --i) {
-//          data_collection_[i] = std::move(data_collection_[i - 1]);
-//        }
+        for (int i = index_from; i > index_to; --i) {
+          data_collection_[i] = std::move(data_collection_[i - 1]);
+        }
       }
     } else if (beginMoveRows(row_parent, index_from, index_from, row_parent, index_to + 1)) {
-//      for (int i = index_from; i < index_to; ++i) {
-//        data_collection_[i] = std::move(data_collection_[i + 1]);
-//      }
+      for (int i = index_from; i < index_to; ++i) {
+        data_collection_[i] = std::move(data_collection_[i + 1]);
+      }
     }
-//    data_collection_[index_to] = std::move(temp_data);
+    data_collection_[index_to] = std::move(temp_data);
     endMoveRows();
 
 //    for (auto& data: data_collection_) {
