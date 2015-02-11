@@ -17,7 +17,7 @@
     use of the MaidSafe Software.                                                                 */
 
 #include "maidsafe/launcher/ui/controllers/home_page_controller.h"
-#include "maidsafe/launcher/ui/models/home_page_model.h"
+#include "maidsafe/launcher/ui/models/app_collection.h"
 
 namespace maidsafe {
 
@@ -28,13 +28,13 @@ namespace ui {
 HomePageController::HomePageController(MainWindow& main_window, QObject* parent)
     : QObject{parent},
       main_window_{main_window},
-      home_page_model_{new HomePageModel{this}} {
+      app_collection_{new AppCollection{this}} {
 }
 
 HomePageController::~HomePageController() = default;
 
 QObject* HomePageController::homePageModel() const {
-  return home_page_model_;
+  return app_collection_;
 }
 
 HomePageController::HomePageViews HomePageController::currentView() const {
@@ -49,7 +49,11 @@ void HomePageController::SetCurrentView(const HomePageViews new_current_view) {
 }
 
 void HomePageController::move(int index_from, int index_to) {
-  home_page_model_->MoveData(index_from, index_to);
+  app_collection_->MoveData(index_from, index_to);
+}
+
+void HomePageController::addAppRequested(const QUrl& file_url) {
+  app_collection_->AddData(file_url.path(), QColor{130, 80, 255});
 }
 
 void HomePageController::Invoke() {

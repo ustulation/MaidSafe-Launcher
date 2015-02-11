@@ -16,8 +16,8 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#ifndef HOME_PAGE_MODEL_H
-#define HOME_PAGE_MODEL_H
+#ifndef APP_COLLECTION_H_
+#define APP_COLLECTION_H_
 
 #include "maidsafe/launcher/ui/helpers/qt_push_headers.h"
 #include "maidsafe/launcher/ui/helpers/qt_pop_headers.h"
@@ -97,7 +97,7 @@ class Data : public QObject {
   QString prop3_{tr("This is the last thing that is meant to be displayed.")};
 };
 
-class HomePageModel : public QAbstractListModel {
+class AppCollection : public QAbstractListModel {
   Q_OBJECT
 
   using ModelRoleContainer_t = QHash<int, QByteArray>;
@@ -113,7 +113,7 @@ class HomePageModel : public QAbstractListModel {
   };
 
  public:
-  explicit HomePageModel(QObject* parent = nullptr);
+  explicit AppCollection(QObject* parent = nullptr);
 
   ModelRoleContainer_t roleNames() const override;
   int rowCount(const QModelIndex& = QModelIndex{}) const override;
@@ -153,4 +153,4 @@ class HomePageModel : public QAbstractListModel {
 
 }  // namespace maidsafe
 
-#endif // HOME_PAGE_MODEL_H
+#endif // APP_COLLECTION_H_

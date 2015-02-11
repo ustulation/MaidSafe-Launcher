@@ -16,7 +16,7 @@
     See the Licences for the specific language governing permissions and limitations relating to
     use of the MaidSafe Software.                                                                 */
 
-#include "maidsafe/launcher/ui/models/home_page_model.h"
+#include "maidsafe/launcher/ui/models/app_collection.h"
 
 namespace maidsafe {
 
@@ -24,7 +24,7 @@ namespace launcher {
 
 namespace ui {
 
-HomePageModel::HomePageModel(QObject* parent)
+AppCollection::AppCollection(QObject* parent)
     : QAbstractListModel{parent},
       data_collection_ {
         Data{"Zero", QColor{255, 0, 0}},
@@ -45,15 +45,15 @@ HomePageModel::HomePageModel(QObject* parent)
   connect(&timer_, SIGNAL(timeout()), this, SLOT(OnTimeout()));
 }
 
-HomePageModel::ModelRoleContainer_t HomePageModel::roleNames() const {
+AppCollection::ModelRoleContainer_t AppCollection::roleNames() const {
   return roles_;
 }
 
-int HomePageModel::rowCount(const QModelIndex&) const {
+int AppCollection::rowCount(const QModelIndex&) const {
   return data_collection_.size();
 }
 
-QVariant HomePageModel::data(const QModelIndex& index, int role /*= Qt::DisplayRole */) const {
+QVariant AppCollection::data(const QModelIndex& index, int role /*= Qt::DisplayRole */) const {
   QVariant return_val;
 
   if (index.row() >= 0 && index.row() < static_cast<int>(data_collection_.size())) {
@@ -88,13 +88,13 @@ QVariant HomePageModel::data(const QModelIndex& index, int role /*= Qt::DisplayR
   return return_val;
 }
 
-void HomePageModel::AddData(const QString& name, const QColor& color) {
+void AppCollection::AddData(const QString& name, const QColor& color) {
   beginInsertRows(QModelIndex{}, data_collection_.size(), data_collection_.size());
   data_collection_.emplace_back(name, color);
   endInsertRows();
 }
 
-void HomePageModel::RemoveData(const QString& name) {
+void AppCollection::RemoveData(const QString& name) {
   for (std::size_t index{}; index < data_collection_.size(); ++index) {
     if (data_collection_[index].name() == name) {
       beginRemoveRows(QModelIndex{}, index, index);
@@ -105,7 +105,7 @@ void HomePageModel::RemoveData(const QString& name) {
   }
 }
 
-void HomePageModel::UpdateData(const QString& name, const Data& new_data) {
+void AppCollection::UpdateData(const QString& name, const Data& new_data) {
   for (std::size_t index{}; index < data_collection_.size(); ++index) {
     if (data_collection_[index].name() == name) {
       data_collection_[index] = new_data;
@@ -114,7 +114,7 @@ void HomePageModel::UpdateData(const QString& name, const Data& new_data) {
   }
 }
 
-void HomePageModel::UpdateData(const QString& name, const QString& new_name) {
+void AppCollection::UpdateData(const QString& name, const QString& new_name) {
   for (std::size_t index{}; index < data_collection_.size(); ++index) {
     if (data_collection_[index].name() == name) {
       data_collection_[index].setName(new_name);
@@ -123,7 +123,7 @@ void HomePageModel::UpdateData(const QString& name, const QString& new_name) {
   }
 }
 
-void HomePageModel::UpdateData(const QString& name, const QColor& new_color) {
+void AppCollection::UpdateData(const QString& name, const QColor& new_color) {
   for (std::size_t index{}; index < data_collection_.size(); ++index) {
     if (data_collection_[index].name() == name) {
       data_collection_[index].setObjColor(new_color);
@@ -132,7 +132,7 @@ void HomePageModel::UpdateData(const QString& name, const QColor& new_color) {
   }
 }
 
-void HomePageModel::OnTimeout() {
+void AppCollection::OnTimeout() {
   auto id(qrand() % 256);
   auto r(qrand() % 256);
   auto g(qrand() % 256);
@@ -140,7 +140,7 @@ void HomePageModel::OnTimeout() {
   AddData(QString{"Id: %1"}.arg(id), QColor{r, g, b});
 }
 
-void HomePageModel::MoveData(int index_from, int index_to) {
+void AppCollection::MoveData(int index_from, int index_to) {
   int size = data_collection_.size();
   if (index_from >= 0 && index_from < size &&
       index_to   >= 0 && index_to   < size &&
@@ -161,34 +161,30 @@ void HomePageModel::MoveData(int index_from, int index_to) {
     }
     data_collection_[index_to] = std::move(temp_data);
     endMoveRows();
-
-//    for (auto& data: data_collection_) {
-//      qDebug() << data.name();
-//    }
   }
 }
 
-void HomePageModel::StartRandomAdd() {
+void AppCollection::StartRandomAdd() {
   timer_.start();
 }
 
-void HomePageModel::StopRandomAdd() {
+void AppCollection::StopRandomAdd() {
 
 }
 
-void HomePageModel::StartRandomDelete() {
+void AppCollection::StartRandomDelete() {
 
 }
 
-void HomePageModel::StopRandomDelete() {
+void AppCollection::StopRandomDelete() {
 
 }
 
-void HomePageModel::StartRandomUpdate() {
+void AppCollection::StartRandomUpdate() {
 
 }
 
-void HomePageModel::StopRandomUpdate() {
+void AppCollection::StopRandomUpdate() {
 
 }
 

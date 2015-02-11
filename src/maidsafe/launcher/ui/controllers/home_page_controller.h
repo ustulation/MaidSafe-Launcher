@@ -29,7 +29,7 @@ namespace launcher {
 namespace ui {
 
 class MainWindow;
-class HomePageModel;
+class AppCollection;
 
 class HomePageController : public QObject {
   Q_OBJECT
@@ -55,6 +55,7 @@ class HomePageController : public QObject {
   void SetCurrentView(const HomePageViews new_current_view);
 
   Q_INVOKABLE void move(int index_from, int index_to);
+  Q_INVOKABLE void addAppRequested(const QUrl& file_url);
 
  signals: // NOLINT - Spandan
   void currentViewChanged(HomePageViews new_view);
@@ -64,7 +65,7 @@ class HomePageController : public QObject {
 
  private:
   MainWindow& main_window_;
-  HomePageModel* home_page_model_{nullptr};
+  AppCollection* app_collection_{nullptr};
 
   HomePageViews current_view_{HomePageView};
 };

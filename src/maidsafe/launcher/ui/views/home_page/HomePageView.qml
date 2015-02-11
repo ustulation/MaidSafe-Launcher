@@ -18,6 +18,7 @@
 
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
+import QtQuick.Dialogs 1.2
 import QtQuick.Controls 1.3
 import SAFEAppLauncher.HomePageController 1.0
 
@@ -37,6 +38,18 @@ FocusScope {
     mainWindow_.maximumHeight = 10000
   }
 
+  Timer {
+    id: queuedConnectionTimer
+    interval: 0
+  }
+
+  FileDialog {
+    id: fileDialog
+
+    title: qsTr("Choose an App to add to Launcher")
+    onAccepted: homePageController_.addAppRequested(fileUrl)
+  }
+
   Item {
     anchors {
       fill: parent
@@ -53,31 +66,56 @@ FocusScope {
       signal dragActive()
       readonly property int delegateWidth: 50
 
+      anchors.fill: parent
+
       spacing: 30
       columns: Math.max(1, width / (delegateWidth + spacing))
 
-      anchors.fill: parent
+      Rectangle {
+        id: addAppRect
+
+        width: gridView.delegateWidth
+        height: width
+        radius: 5
+
+        color: "#80808080"
+
+        Rectangle {
+          anchors.centerIn: parent
+
+          width: parent.width - 10
+          height: 2
+          color: "grey"
+        }
+        Rectangle {
+          anchors.centerIn: parent
+
+          width: parent.width - 10
+          height: 2
+          color: "grey"
+          rotation: 90
+        }
+
+        MouseArea {
+          anchors.fill: parent
+          onClicked: {
+            fileDialog.open()
+          }
+        }
+      }
+
+
       Repeater {
         id: gridRepeater
 
         model: homePageController_.homePageModel
 
-        //      moveDisplaced: Transition {
-        //        NumberAnimation {
-        //          properties: "x,y"
-        //          duration: 300
-        //        }
-        //      }
-
-        //      Behavior on cellHeight {
-        //        NumberAnimation {
-        //          alwaysRunToEnd: true
-        //        }
-        //      }
+        onCountChanged: queuedConnectionTimer.restart()
 
         delegate: FocusScope {
-          id: delegateItem
+          id: delegateRoot
 
+          readonly property int dropDownAnimationDuration: 50
           readonly property int defaultHeight: 50
 
           focus: true
@@ -85,25 +123,41 @@ FocusScope {
           height: defaultHeight
           width: gridView.delegateWidth
 
-          onActiveFocusChanged: {
-            if (activeFocus) {
-              mouseArea.mouseRelease()
+          function getLeftNeighbour() {
+            return gridRepeater.itemAt(model.index ? model.index - 1 : gridRepeater.count - 1)
+          }
+          function getRightNeighbour() {
+            return gridRepeater.itemAt(model.index + 1 >= gridRepeater.count ? 0 : model.index + 1)
+          }
+
+          property Item leftNeighbour: getLeftNeighbour()
+          property Item rightNeighbour: getRightNeighbour()
+
+          Connections {
+            target: queuedConnectionTimer
+            onTriggered: {
+              delegateRoot.leftNeighbour = delegateRoot.getLeftNeighbour()
+              delegateRoot.rightNeighbour = delegateRoot.getRightNeighbour()
             }
           }
 
-          KeyNavigation.left: gridRepeater.itemAt(model.index - 1 < 0 ? gridRepeater.count - 1 : model.index - 1)
-          KeyNavigation.right: gridRepeater.itemAt(model.index + 1 >= gridRepeater.count ? 0 : model.index + 1)
+          KeyNavigation.left:  leftNeighbour
+          KeyNavigation.right: rightNeighbour
+          Keys.onEnterPressed: mouseArea.simulateMouseRelease()
+          Keys.onReturnPressed: mouseArea.simulateMouseRelease()
 
           NumberAnimation on height {
-            id: delegateItemIncreaseHeightAnim
+            id: delegateRootIncreaseHeightAnim
             running: false
-            to: delegateItem.defaultHeight + detailsRect.maxHeight + 20
+            to: delegateRoot.defaultHeight + detailsRect.maxHeight + 20
+            duration: delegateRoot.dropDownAnimationDuration
           }
 
           NumberAnimation on height {
-            id: delegateItemDecreaseHeightAnim
+            id: delegateRootDecreaseHeightAnim
             running: false
-            to: delegateItem.defaultHeight
+            to: delegateRoot.defaultHeight
+            duration: delegateRoot.dropDownAnimationDuration
           }
 
           Rectangle {
@@ -125,10 +179,10 @@ FocusScope {
 
             border {
               color: "black"
-              width: mouseArea.checked
+              width: delegateRoot.activeFocus ? 2 : 0
             }
 
-            width: delegateItem.width
+            width: delegateRoot.width
             height: 50
 
             states: State {
@@ -160,10 +214,19 @@ FocusScope {
               id: mouseArea
               anchors.fill: parent
 
-              signal mouseRelease()
+              function simulateMouseRelease() {
+                if (!wasDragged) {
+                  checked = !checked
+                } else {
+                  queuedConnectionTimer.restart()
+                  wasDragged = false
+                }
+
+                delegateRoot.focus = true
+              }
 
               property bool checked: false
-              property bool ignoreTogglingChecked: false
+              property bool wasDragged: false
 
               Component.onCompleted: {
                 exclusiveGroup.bindCheckable(mouseArea)
@@ -181,22 +244,12 @@ FocusScope {
                 }
               }
 
-              onMouseRelease: {
-                if (!ignoreTogglingChecked) {
-                  checked = !checked
-                } else {
-                  ignoreTogglingChecked = false
-                }
-              }
-
               drag.target: parent
-              onReleased: {
-                mouseRelease()
-              }
+              onReleased: simulateMouseRelease()
 
               drag.onActiveChanged: {
                 if (drag.active) {
-                  mouseArea.ignoreTogglingChecked = true
+                  mouseArea.wasDragged = true
                   gridView.dragActive()
                 }
               }
@@ -278,12 +331,14 @@ FocusScope {
                 id: animIncreaseHeight
                 to: detailsRect.maxHeight
                 running: false
+                duration: delegateRoot.dropDownAnimationDuration
               }
 
               NumberAnimation on height {
                 id: animDecreaseHeight
                 to: 10
                 running: false
+                duration: delegateRoot.dropDownAnimationDuration
               }
 
               property bool created: false
@@ -293,23 +348,23 @@ FocusScope {
                 if (created) {
                   animIncreaseHeight.complete()
                   animDecreaseHeight.complete()
-                  delegateItemIncreaseHeightAnim.complete()
-                  delegateItemDecreaseHeightAnim.complete()
+                  delegateRootIncreaseHeightAnim.complete()
+                  delegateRootDecreaseHeightAnim.complete()
                   if (visible) {
                     x = focusScopeRoot.mapToItem(delegateRect, 15, 0).x
 
                     animIncreaseHeight.start()
-                    delegateItemIncreaseHeightAnim.start()
+                    delegateRootIncreaseHeightAnim.start()
                   }
                   else {
                     animDecreaseHeight.start()
-                    delegateItemDecreaseHeightAnim.start()
+                    delegateRootDecreaseHeightAnim.start()
                   }
                 }
               }
 
               Connections {
-                target: delegateItem
+                target: delegateRoot
                 onXChanged: detailsRect.x = focusScopeRoot.mapToItem(delegateRect, 15, 0).x
               }
 
