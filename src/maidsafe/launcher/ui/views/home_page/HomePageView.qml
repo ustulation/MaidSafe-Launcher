@@ -71,6 +71,17 @@ FocusScope {
       spacing: 30
       columns: Math.max(1, width / (delegateWidth + spacing))
 
+      move: Transition {
+        id: moveTransition
+
+        enabled: false
+
+        NumberAnimation {
+          properties: "x,y"
+          duration: 200
+        }
+      }
+
       Rectangle {
         id: addAppRect
 
@@ -218,6 +229,7 @@ FocusScope {
                 if (!wasDragged) {
                   checked = !checked
                 } else {
+                  moveTransition.enabled = false
                   queuedConnectionTimer.restart()
                   wasDragged = false
                 }
@@ -249,6 +261,7 @@ FocusScope {
 
               drag.onActiveChanged: {
                 if (drag.active) {
+                  moveTransition.enabled = true
                   mouseArea.wasDragged = true
                   gridView.dragActive()
                 }
