@@ -48,7 +48,8 @@ class Data : public QObject {
         color_{std::forward<U>(u)} { }
 
   Data(const Data& other)
-      : name_{other.name_},
+      : QObject{nullptr},
+        name_{other.name_},
         color_{other.color_} { }
 
   Data& operator=(const Data& other) {
