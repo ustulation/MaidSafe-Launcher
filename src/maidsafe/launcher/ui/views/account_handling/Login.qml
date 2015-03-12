@@ -40,6 +40,61 @@ FocusScope {
     yOffset: textFieldsAndButtonColumn.y
   }
 
+  Image {
+    id: rocket
+    anchors { bottom: textFieldsAndButtonColumn.top; left: textFieldsAndButtonColumn.right }
+
+    Timer {
+      property int num: 0
+      readonly property url base_url: "/resources/images/rocket-busy/loading"
+
+      interval: 1 / 29 * 1000
+      repeat: true
+      running: true
+
+      onTriggered: {
+        rocket.source = base_url + num + ".png"
+        num = (num + 1) % 29
+      }
+    }
+  }
+
+//  Repeater {
+//    id: repeater
+
+//    onCountChanged: {
+//      if (count === 29) {
+//        timer1.start()
+//      }
+//    }
+
+//    Timer {
+//      id: timer1
+
+//      property int num: 0
+//      interval: 1000 / 29
+//      repeat: true
+
+//      onTriggered: {
+//        repeater.itemAt(num).visible = true
+//        repeater.itemAt(!num ? repeater.count - 1 : num -1)
+//      }
+//    }
+
+//    model: 29
+
+//    delegate: Image {
+//      id: image
+//      source: "/resources/images/rocket-busy/loading" + model.index + ".png"
+//      property bool checked: false
+//      property ExclusiveGroup grp: exclusiveGrp
+//      onGrpChanged: {
+//        if (grp) { grp.bindCheckable(image) }
+//      }
+//      visible: checked
+//    }
+//  }
+
   Column {
     id: textFieldsAndButtonColumn
     objectName: "textFieldsAndButtonColumn"
