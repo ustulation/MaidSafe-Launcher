@@ -141,6 +141,17 @@ ms_add_executable(safe_app_launcher "Production" ${UiMain}
                                                  ${UiAppIconResource})
 target_include_directories(safe_app_launcher PRIVATE "../../../")
 target_link_libraries(safe_app_launcher ${Qt5TargetLibs} maidsafe_common) # maidsafe_launcher
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(safe_app_launcher PRIVATE QT_QML_DEBUG)
+  message(STATUS "NOTE: QML Debugging and Profiling is enabled")
+  message(STATUS "      Format of command line parameters is: qmljsdebugger=port:<port_from>[,port_to][,host:<ip address>][,block]")
+  message(STATUS "      Eg., (Linux): $ ./safe_app_launcher -qmljsdebugger=port:32768,block")
+  message(STATUS "      \"block\" will block the app until external profiler/debugger connects to it so that it can attach to it right from the app's start")
+  message(STATUS "      Attach profiler using suitable IDE or if using command line use: qmlprofiler -p <port> -attach <hostname/ip-address>")
+  message(STATUS "      Attach debugger via QtCreator->Debug->Start Debugging->Attach to QML Port")
+endif()
+
 if(UNIX)
   set_source_files_properties(${AllUiSourceFiles} PROPERTIES COMPILE_FLAGS -Wno-float-equal)
 endif()

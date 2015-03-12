@@ -67,55 +67,76 @@ FocusScope {
 
     source: "/resources/images/login_bg.png"
 
-    CustomText {
-      id: placeHolderTextFirstLine
-      objectName: "placeHolderTextFirstLine"
+//    CustomText {
+//      id: placeHolderTextFirstLine
+//      objectName: "placeHolderTextFirstLine"
 
-      anchors {
-        horizontalCenter: parent.horizontalCenter
-        bottom: placeHolderTextSecondLine.top
-        bottomMargin: 5
+//      anchors {
+//        horizontalCenter: parent.horizontalCenter
+//        bottom: placeHolderTextSecondLine.top
+//        bottomMargin: 5
+//      }
+
+//      font { pixelSize: 45 }
+//      text: qsTr("SAFE")
+//    }
+
+//    CustomText {
+//      id: placeHolderTextSecondLine
+//      objectName: "placeHolderTextSecondLine"
+
+//      anchors {
+//        horizontalCenter: parent.horizontalCenter
+//        bottom: parent.bottom
+//        bottomMargin: 375
+//      }
+
+//      font {
+//        pixelSize: 45
+//        family: globalFontFamily.name
+//      }
+//      text: qsTr("App Launcher")
+//    }
+
+//    Loader {
+//      id: accountHandlerLoader
+//      objectName: "accountHandlerLoader"
+
+//      anchors.fill: parent
+
+//      source: {
+//        if (accountHandlerController_.currentView === AccountHandlerController.CreateAccountView) {
+//          "CreateAccount.qml"
+//        } else if (accountHandlerController_.currentView === AccountHandlerController.LoginView) {
+//          "Login.qml"
+//        } else {
+//          ""
+//        }
+//      }
+
+//      focus: true
+//      onLoaded: item.focus = true
+//    }
+
+    Column {
+      spacing: 15
+      BlueButton {
+        text: qsTr("show busy")
+        onClicked: customStatusIndicator.showBusy()
       }
-
-      font { pixelSize: 45 }
-      text: qsTr("SAFE")
+      BlueButton {
+        text: qsTr("show error")
+        onClicked: customStatusIndicator.showError()
+      }
+      BlueButton {
+        text: qsTr("show success")
+        onClicked: customStatusIndicator.showSuccess()
+      }
     }
 
-    CustomText {
-      id: placeHolderTextSecondLine
-      objectName: "placeHolderTextSecondLine"
-
-      anchors {
-        horizontalCenter: parent.horizontalCenter
-        bottom: parent.bottom
-        bottomMargin: 375
-      }
-
-      font {
-        pixelSize: 45
-        family: globalFontFamily.name
-      }
-      text: qsTr("App Launcher")
-    }
-
-    Loader {
-      id: accountHandlerLoader
-      objectName: "accountHandlerLoader"
-
-      anchors.fill: parent
-
-      source: {
-        if (accountHandlerController_.currentView === AccountHandlerController.CreateAccountView) {
-          "CreateAccount.qml"
-        } else if (accountHandlerController_.currentView === AccountHandlerController.LoginView) {
-          "Login.qml"
-        } else {
-          ""
-        }
-      }
-
-      focus: true
-      onLoaded: item.focus = true
+    CustomStatusIndicator {
+      id: customStatusIndicator
+      anchors.centerIn: parent
     }
   }
 }
