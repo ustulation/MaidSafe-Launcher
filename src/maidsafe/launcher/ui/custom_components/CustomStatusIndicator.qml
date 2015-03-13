@@ -90,13 +90,14 @@ Item {
     property Item currentRepeater: null
     property bool stopFlag: false
     property var callback: null
+    property Item lastVisibleImage: null
 
     repeat: true
 
     onTriggered: {
       if (!currentImageNumber) {
         if (stopFlag) {
-          currentRepeater.itemAt(currentRepeater.count - 1).visible = false
+          lastVisibleImage = currentRepeater.itemAt(currentRepeater.count - 1)
           running = stopFlag = false
           callback()
           return
@@ -107,6 +108,10 @@ Item {
       }
 
       currentRepeater.itemAt(currentImageNumber).visible = true
+      if (lastVisibleImage) {
+        lastVisibleImage.visible = false
+        lastVisibleImage = null
+      }
       currentRepeater.itemAt(!currentImageNumber ?
                                currentRepeater.count - 1 : currentImageNumber -1).visible = false
       currentImageNumber = (currentImageNumber + 1) % currentRepeater.count
