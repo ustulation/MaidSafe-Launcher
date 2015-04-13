@@ -181,6 +181,21 @@ FocusScope {
             Drag.hotSpot.x: width / 2
             Drag.hotSpot.y: height / 2
 
+            NumberAnimation on scale {
+              id: scaleUpAnim
+              to: 1
+              duration: 80
+              running: false
+              onStopped: mouseArea.simulateMouseRelease()
+            }
+
+            NumberAnimation on scale {
+              id: scaleDownAnim
+              to: .8
+              duration: 80
+              running: false
+            }
+
             color: model.color
 
             anchors {
@@ -227,7 +242,18 @@ FocusScope {
 
               function simulateMouseRelease() {
                 if (!wasDragged) {
+                  if (!checked && exclusiveGroup.current) {
+                    if (Math.floor((mouseArea.index + 1) / gridView.columns) === Math.floor((exclusiveGroup.current.index + 1) / gridView.columns)) {
+                      mouseArea.animateDropDown = false
+                    }
+                  }
+
                   checked = !checked
+                  if (!checked) {
+                    exclusiveGroup.current = null
+                  }
+
+                  mouseArea.animateDropDown = true
                 } else {
                   moveTransition.enabled = false
                   queuedConnectionTimer.restart()
@@ -239,6 +265,9 @@ FocusScope {
 
               property bool checked: false
               property bool wasDragged: false
+              property bool animateDropDown: true
+
+              property int index: model.index
 
               Component.onCompleted: {
                 exclusiveGroup.bindCheckable(mouseArea)
@@ -257,7 +286,14 @@ FocusScope {
               }
 
               drag.target: parent
-              onReleased: simulateMouseRelease()
+              onPressed: {
+                scaleUpAnim.stop()
+                scaleDownAnim.start()
+              }
+              onReleased: {
+                scaleDownAnim.stop()
+                scaleUpAnim.start()
+              }
 
               drag.onActiveChanged: {
                 if (drag.active) {
@@ -368,6 +404,11 @@ FocusScope {
 
                     animIncreaseHeight.start()
                     delegateRootIncreaseHeightAnim.start()
+
+                    if (!mouseArea.animateDropDown) {
+                      animIncreaseHeight.complete()
+                      delegateRootIncreaseHeightAnim.complete()
+                    }
                   }
                   else {
                     animDecreaseHeight.start()
