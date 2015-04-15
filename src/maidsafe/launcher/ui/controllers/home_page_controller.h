@@ -55,6 +55,7 @@ class HomePageController : public QObject {
   void SetCurrentView(const HomePageViews new_current_view);
 
   Q_INVOKABLE void move(int index_from, int index_to);
+  Q_INVOKABLE void makeNewGroup(int item_index_0, int item_index_1);
   Q_INVOKABLE void addAppRequested(const QUrl& file_url);
 
  signals: // NOLINT - Spandan

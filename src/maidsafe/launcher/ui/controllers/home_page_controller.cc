@@ -52,6 +52,10 @@ void HomePageController::move(int index_from, int index_to) {
   app_collection_->MoveData(index_from, index_to);
 }
 
+void HomePageController::makeNewGroup(int item_index_0, int item_index_1) {
+  app_collection_->MakeNewGroup(item_index_0, item_index_1);
+}
+
 void HomePageController::addAppRequested(const QUrl& file_url) {
   app_collection_->AddData(file_url.path(), QColor{130, 80, 255});
 }
