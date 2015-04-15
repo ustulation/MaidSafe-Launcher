@@ -50,10 +50,14 @@ FocusScope {
     onAccepted: homePageController_.addAppRequested(fileUrl)
   }
 
-  Item {
-    anchors {
-      fill: parent
-      margins: 20
+  DropArea {
+    anchors.fill: parent
+
+    onEntered: {
+      if (drag.source.index !== gridRepeater.count - 1) {
+        // If it leaves into the wilderness shift everything beyond it to its place
+        homePageController_.move(drag.source.index, gridRepeater.count - 1)
+      }
     }
 
     ExclusiveGroup {
@@ -66,9 +70,13 @@ FocusScope {
       signal dragActive()
       readonly property int delegateWidth: 50
 
-      anchors.fill: parent
+      anchors {
+        fill: parent
+        topMargin: 100
+        margins: 20
+      }
 
-      spacing: 30
+      spacing: 50
       columns: Math.max(1, width / (delegateWidth + spacing))
 
       move: Transition {
@@ -171,6 +179,86 @@ FocusScope {
             duration: delegateRoot.dropDownAnimationDuration
           }
 
+          DropArea {
+            id: displaceDropArea
+
+            property Item sourceObj: null
+            property real sourceX: -1
+
+            anchors {
+              fill: parent
+              topMargin: -50
+              rightMargin: -50
+            }
+
+            onEntered: sourceObj = drag.source
+
+            onExited: {
+              displaceTimer.stop() // PositionChanged() cannot detect exit condition
+              sourceObj = null
+            }
+
+            onPositionChanged: {
+              if (drag.x > 50 || drag.y < 50) {
+                sourceX = drag.x
+                displaceTimer.start()
+              } else {
+                displaceTimer.stop()
+              }
+            }
+
+            Timer {
+              id: displaceTimer
+
+              interval: 1000
+
+              onTriggered: {
+                if (model.index > displaceDropArea.sourceObj.index) {
+                  homePageController_.move(displaceDropArea.sourceObj.index, model.index)
+                } else if (model.index < displaceDropArea.sourceObj.index) {
+                  if (displaceDropArea.sourceX < 50) {
+                    homePageController_.move(displaceDropArea.sourceObj.index, model.index)
+                  } else {
+                    homePageController_.move(displaceDropArea.sourceObj.index, model.index + 1)
+                  }
+                }
+              }
+            }
+
+            DropArea {
+              id: dropArea
+
+              anchors {
+                fill: parent
+                margins: 10
+                topMargin: 60
+                rightMargin: 60
+              }
+
+              property Item sourceObj: null
+
+              Timer {
+                id: makeGroupTimer
+                interval: 1000
+                onTriggered: {
+                  if (dropArea.sourceObj.index !== model.index) {
+                    console.log("Group Source:", dropArea.sourceObj.index, "   Into:", model.index)
+                    homePageController_.makeNewGroup(model.index, dropArea.sourceObj.index)
+                  }
+                }
+              }
+
+              onEntered: {
+                sourceObj = drag.source
+                makeGroupTimer.restart()
+              }
+              onExited: {
+                makeGroupTimer.stop()
+                sourceObj = null
+              }
+            }
+          }
+
           Rectangle {
             id: delegateRect
 
@@ -242,18 +330,24 @@ FocusScope {
 
               function simulateMouseRelease() {
                 if (!wasDragged) {
-                  if (!checked && exclusiveGroup.current) {
-                    if (Math.floor((mouseArea.index + 1) / gridView.columns) === Math.floor((exclusiveGroup.current.index + 1) / gridView.columns)) {
-                      mouseArea.animateDropDown = false
+                  if (!checkedAlreadyToggledByPress) {
+                    // Make sure not to animate if in the same row
+                    if (!checked && exclusiveGroup.current) {
+                      if (Math.floor((mouseArea.index + 1) / gridView.columns) === Math.floor((exclusiveGroup.current.index + 1) / gridView.columns)) {
+                        mouseArea.animateDropDown = false
+                      }
                     }
+
+                    checked = !checked
+                    mouseArea.animateDropDown = true
+                  } else {
+                    checkedAlreadyToggledByPress = false
                   }
 
-                  checked = !checked
+                  // ExclusiveGroup is lazy. Will keep the last one that was true even if all are currently false
                   if (!checked) {
                     exclusiveGroup.current = null
                   }
-
-                  mouseArea.animateDropDown = true
                 } else {
                   moveTransition.enabled = false
                   queuedConnectionTimer.restart()
@@ -266,6 +360,7 @@ FocusScope {
               property bool checked: false
               property bool wasDragged: false
               property bool animateDropDown: true
+              property bool checkedAlreadyToggledByPress: false
 
               property int index: model.index
 
@@ -273,11 +368,7 @@ FocusScope {
                 exclusiveGroup.bindCheckable(mouseArea)
               }
 
-              Binding on checked {
-                when: mouseArea.drag.active
-                value: false
-              }
-
+              // When others are dragged
               Connections {
                 target: gridView
                 onDragActive: {
@@ -287,6 +378,12 @@ FocusScope {
 
               drag.target: parent
               onPressed: {
+                // Close drop-down immediately and not on mouse-release
+                if (checked) {
+                  checked = false
+                  checkedAlreadyToggledByPress = true
+                }
+
                 scaleUpAnim.stop()
                 scaleDownAnim.start()
               }
@@ -482,15 +579,6 @@ FocusScope {
                   color: "steelblue"
                 }
               }
-            }
-          }
-
-          DropArea {
-            id: dropArea
-            anchors.fill: parent
-
-            onEntered: {
-              homePageController_.move(drag.source.index, model.index)
             }
           }
         }
