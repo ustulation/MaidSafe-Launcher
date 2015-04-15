@@ -20,8 +20,8 @@
 
 #include "maidsafe/launcher/ui/controllers/account_handler_controller.h"
 #include "maidsafe/launcher/ui/controllers/home_page_controller.h"
+#include "maidsafe/launcher/ui/models/app_collection.h"
 #include "maidsafe/launcher/ui/helpers/main_window.h"
-#include "maidsafe/launcher/ui/models/api_model.h"
 
 // TODO(Spandan) remove when fake Launcher is removed
 #include "maidsafe/launcher/ui/models/account_handler_model.h"
@@ -40,7 +40,6 @@ MainController::~MainController() = default;
 
 void MainController::EventLoopStarted() {
   main_window_.reset(new MainWindow);
-  api_model_ = new APIModel{this};
   account_handler_controller_ = new AccountHandlerController{*main_window_, this};
   home_page_controller_ = new HomePageController{*main_window_, this};
 
@@ -97,6 +96,8 @@ void MainController::RegisterQmlTypes() const {
   qmlRegisterUncreatableType<HomePageController>(
       "SAFEAppLauncher.HomePageController", 1, 0, "HomePageController",
       "Error!! Attempting to instantiate uncreatable type - HomePageController");
+  qmlRegisterUncreatableType<CommonEnums>("SAFEAppLauncher.HomePageController", 1, 0, "CommonEnums",
+      "Error!! Attempting to instantiate uncreatable type - CommonEnums");
 }
 
 void MainController::RegisterQtMetaTypes() const {}

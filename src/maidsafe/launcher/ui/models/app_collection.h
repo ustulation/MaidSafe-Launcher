@@ -30,7 +30,7 @@ namespace launcher {
 
 namespace ui {
 
-class CommonEnums : QObject {
+class CommonEnums : public QObject {
   Q_OBJECT
   Q_ENUMS(ItemType)
 
@@ -44,7 +44,7 @@ class CommonEnums : QObject {
 class AppItem : public QObject {
   Q_OBJECT
 
-  Q_PROPERTY(CommonEnums::ItemType itemType READ itemType WRITE setItemType NOTIFY itemTypeChanged FINAL)
+  Q_PROPERTY(int itemType READ itemType NOTIFY itemTypeChanged FINAL)
   Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
   Q_PROPERTY(QColor objColor READ objColor WRITE setObjColor NOTIFY objColorChanged FINAL)
   Q_PROPERTY(QString prop0 READ prop0 WRITE setProp0 NOTIFY prop0Changed FINAL)
@@ -75,9 +75,9 @@ class AppItem : public QObject {
   AppItem& operator=(AppItem&& other) = default;
   ~AppItem() override = default;
 
-  CommonEnums::ItemType itemType() const { return type_; }
+  int itemType() const { return type_; }
   void setItemType(const CommonEnums::ItemType new_type) { if (new_type != type_) { type_ = new_type; emit itemTypeChanged(type_); } }
-  Q_SIGNAL void itemTypeChanged(CommonEnums::ItemType new_type);
+  Q_SIGNAL void itemTypeChanged(int new_type);
 
   QString name() const { return name_; }
   void setName(const QString new_name) { if (new_name != name_) { name_ = new_name; emit nameChanged(name_); } }
@@ -117,14 +117,16 @@ class AppItem : public QObject {
 
 class AppCollection : public QAbstractListModel {
   Q_OBJECT
-  Q_PROPERTY(CommonEnums::ItemType itemType READ itemType WRITE setItemType NOTIFY itemTypeChanged FINAL)
+  Q_PROPERTY(int itemType READ itemType NOTIFY itemTypeChanged FINAL)
   Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
+  Q_PROPERTY(QObject* parentGroup READ parentGroup WRITE setParentGroup NOTIFY parentGroupChanged FINAL)
 
   using ModelRoleContainer_t = QHash<int, QByteArray>;
 
   enum {
     ItemRole = Qt::UserRole + 1,
     TypeRole,
+    ParentGroupRole,
     NameRole,
     ColorRole,
     Prop0Role,
@@ -135,14 +137,19 @@ class AppCollection : public QAbstractListModel {
 
  public:
   explicit AppCollection(const bool fill = true, QObject* parent = nullptr);
+  explicit AppCollection(AppCollection* parent_group);
 
-  CommonEnums::ItemType itemType() const { return type_; }
+  int itemType() const { return type_; }
   void setItemType(const CommonEnums::ItemType new_type) { if (new_type != type_) { type_ = new_type; emit itemTypeChanged(type_); } }
-  Q_SIGNAL void itemTypeChanged(CommonEnums::ItemType new_type);
+  Q_SIGNAL void itemTypeChanged(int new_type);
 
   QString name() const { return name_; }
   void setName(const QString new_name) { if (new_name != name_) { name_ = new_name; emit nameChanged(name_); } }
   Q_SIGNAL void nameChanged(QString new_name);
+
+  QObject* parentGroup() const { return parent_group_; }
+  void setParentGroup(QObject* const new_group) { if (new_group != parent_group_) { parent_group_ = dynamic_cast<AppCollection*>(new_group); emit parentGroupChanged(parent_group_); } }
+  Q_SIGNAL void parentGroupChanged(QObject* new_group);
 
   ModelRoleContainer_t roleNames() const override;
   int rowCount(const QModelIndex& = QModelIndex{}) const override;
@@ -157,7 +164,8 @@ class AppCollection : public QAbstractListModel {
   void UpdateData(const QString& name, const QColor& new_color);
 
   void MoveData(int index_from, int index_to);
-  void MakeNewGroup(const int item_index_0, int item_index_1);
+  void MakeNewGroup(const int item_index_0, const int item_index_1);
+  void AddToGroup(const int group_index, const int source_index);
 
   void StartRandomAdd();
   void StopRandomAdd();
@@ -174,6 +182,7 @@ class AppCollection : public QAbstractListModel {
  private:
   CommonEnums::ItemType type_{CommonEnums::GroupItem};
   QString name_{tr("Untitled Group")};
+  AppCollection* parent_group_{nullptr};
 
   ModelRoleContainer_t roles_;
   std::vector<std::unique_ptr<QObject>> collection_;

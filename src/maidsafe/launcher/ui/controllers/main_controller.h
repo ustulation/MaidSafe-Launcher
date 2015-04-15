@@ -34,7 +34,6 @@ struct Launcher;
 
 namespace ui {
 
-class APIModel;
 class MainWindow;
 
 class MainController : public QObject {
@@ -80,7 +79,6 @@ class MainController : public QObject {
   void SetContexProperties();
 
   std::unique_ptr<MainWindow> main_window_;
-  APIModel* api_model_{nullptr};
   QObject* account_handler_controller_{nullptr};
   QObject* home_page_controller_{nullptr};
 
