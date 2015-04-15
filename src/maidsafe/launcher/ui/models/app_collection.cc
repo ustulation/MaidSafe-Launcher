@@ -35,8 +35,9 @@ AppCollection::AppCollection(const bool fill, QObject* parent)
     collection_.emplace_back(new AppItem{"Five", QColor{0, 255, 255}});
   }
 
-  roles_[ItemRole] = "data";
+  roles_[ItemRole] = "item";
   roles_[TypeRole] = "type";
+  roles_[ParentGroupRole] = "parentGroup";
   roles_[NameRole] = "name";
   roles_[ColorRole] = "color";
   roles_[Prop0Role] = "prop0";
@@ -67,6 +68,9 @@ QVariant AppCollection::data(const QModelIndex& index, int role /*= Qt::DisplayR
         break;
       case TypeRole:
         return_val = collection_[index.row()]->property("itemType");
+        break;
+      case ParentGroupRole:
+        return_val = collection_[index.row()]->property("parentGroup");
         break;
       case NameRole:
         return_val = collection_[index.row()]->property("name");
@@ -101,9 +105,10 @@ void AppCollection::AddData(const QString& name, const QColor& color) {
 }
 
 void AppCollection::AddData(std::unique_ptr<QObject> new_data) {
-  beginInsertRows(QModelIndex{}, collection_.size(), collection_.size());
-  collection_.emplace_back(std::move(new_data));
-  endInsertRows();
+  qDebug() << this;
+  this->beginInsertRows(QModelIndex{}, collection_.size(), collection_.size());
+  this->collection_.emplace_back(std::move(new_data));
+  this->endInsertRows();
 }
 
 void AppCollection::RemoveData(const QString& name) {
@@ -176,7 +181,7 @@ void AppCollection::MoveData(int index_from, int index_to) {
   }
 }
 
-void AppCollection::MakeNewGroup(const int item_index_0, int item_index_1) {
+void AppCollection::MakeNewGroup(const int item_index_0, const int item_index_1) {
   if (item_index_0 != item_index_1 &&
       item_index_0 >= 0 && item_index_0 < static_cast<int>(collection_.size()) &&
       item_index_1 >= 0 && item_index_1 < static_cast<int>(collection_.size())) {
@@ -201,6 +206,24 @@ void AppCollection::MakeNewGroup(const int item_index_0, int item_index_1) {
     beginRemoveRows(QModelIndex{}, item_index_1, item_index_1);
     collection_.erase(collection_.begin() + item_index_1);
     endRemoveRows();
+  }
+}
+
+void AppCollection::AddToGroup(const int group_index, const int source_index) {
+  if (group_index != source_index &&
+      group_index >= 0 && group_index < static_cast<int>(collection_.size()) &&
+      source_index >= 0 && source_index < static_cast<int>(collection_.size())) {
+    if (auto group = dynamic_cast<AppCollection*>(&*collection_[group_index])) {
+      auto item(std::move(collection_[source_index]));
+      qDebug() << this << group;
+      group->AddData(std::move(item));
+
+      beginRemoveRows(QModelIndex{}, source_index, source_index);
+      collection_.erase(collection_.begin() + source_index);
+      endRemoveRows();
+    } else {
+      qDebug() << "PANIC";
+    }
   }
 }
 

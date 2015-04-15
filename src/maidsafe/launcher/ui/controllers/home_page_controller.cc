@@ -37,6 +37,13 @@ QObject* HomePageController::homePageModel() const {
   return app_collection_;
 }
 
+void HomePageController::setHomePageModel(QObject* new_model) {
+  if (new_model != app_collection_) {
+    app_collection_ = dynamic_cast<AppCollection*>(new_model);
+    emit homePageModelChanged(app_collection_);
+  }
+}
+
 HomePageController::HomePageViews HomePageController::currentView() const {
   return current_view_;
 }
@@ -52,8 +59,12 @@ void HomePageController::move(int index_from, int index_to) {
   app_collection_->MoveData(index_from, index_to);
 }
 
-void HomePageController::makeNewGroup(int item_index_0, int item_index_1) {
+void HomePageController::makeNewGroup(const int item_index_0, const int item_index_1) {
   app_collection_->MakeNewGroup(item_index_0, item_index_1);
+}
+
+void HomePageController::addToGroup(const int group_index, const int source_index) {
+  app_collection_->AddToGroup(group_index, source_index);
 }
 
 void HomePageController::addAppRequested(const QUrl& file_url) {

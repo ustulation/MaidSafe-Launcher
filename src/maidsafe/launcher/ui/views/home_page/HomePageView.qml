@@ -242,8 +242,11 @@ FocusScope {
                 interval: 1000
                 onTriggered: {
                   if (dropArea.sourceObj.index !== model.index) {
-                    console.log("Group Source:", dropArea.sourceObj.index, "   Into:", model.index)
-                    homePageController_.makeNewGroup(model.index, dropArea.sourceObj.index)
+                    if (model.type === CommonEnums.GroupItem) {
+                      homePageController_.addToGroup(model.index, dropArea.sourceObj.index)
+                    } else {
+                      homePageController_.makeNewGroup(model.index, dropArea.sourceObj.index)
+                    }
                   }
                 }
               }
@@ -284,7 +287,7 @@ FocusScope {
               running: false
             }
 
-            color: model.color
+            color: model.type === CommonEnums.GroupItem ? "#000000" : model.color
 
             anchors {
               top: parent.top
@@ -330,23 +333,27 @@ FocusScope {
 
               function simulateMouseRelease() {
                 if (!wasDragged) {
-                  if (!checkedAlreadyToggledByPress) {
-                    // Make sure not to animate if in the same row
-                    if (!checked && exclusiveGroup.current) {
-                      if (Math.floor((mouseArea.index + 1) / gridView.columns) === Math.floor((exclusiveGroup.current.index + 1) / gridView.columns)) {
-                        mouseArea.animateDropDown = false
+                  if (model.type === CommonEnums.AppItem) {
+                    if (!checkedAlreadyToggledByPress) {
+                      // Make sure not to animate if in the same row
+                      if (!checked && exclusiveGroup.current) {
+                        if (Math.floor((mouseArea.index + 1) / gridView.columns) === Math.floor((exclusiveGroup.current.index + 1) / gridView.columns)) {
+                          mouseArea.animateDropDown = false
+                        }
                       }
+
+                      checked = !checked
+                      mouseArea.animateDropDown = true
+                    } else {
+                      checkedAlreadyToggledByPress = false
                     }
 
-                    checked = !checked
-                    mouseArea.animateDropDown = true
+                    // ExclusiveGroup is lazy. Will keep the last one that was true even if all are currently false
+                    if (!checked) {
+                      exclusiveGroup.current = null
+                    }
                   } else {
-                    checkedAlreadyToggledByPress = false
-                  }
-
-                  // ExclusiveGroup is lazy. Will keep the last one that was true even if all are currently false
-                  if (!checked) {
-                    exclusiveGroup.current = null
+                    homePageController_.homePageModel = model.item
                   }
                 } else {
                   moveTransition.enabled = false
@@ -544,14 +551,14 @@ FocusScope {
                   anchors.right: propCol.right
                   elide: Text.ElideMiddle
                   anchors.leftMargin: 10
-                  text: model.color
+                  text: model.type === CommonEnums.GroupItem ? "Group" : model.color
                 }
                 Text {
                   anchors.left: propCol.left
                   anchors.right: propCol.right
                   elide: Text.ElideMiddle
                   anchors.leftMargin: 10
-                  text: model.prop0
+                  text: model.type === CommonEnums.GroupItem ? "Group" : model.prop0
                   color: "black"
                 }
                 Text {
@@ -559,7 +566,7 @@ FocusScope {
                   anchors.right: propCol.right
                   elide: Text.ElideMiddle
                   anchors.leftMargin: 10
-                  text: model.prop1
+                  text: model.type === CommonEnums.GroupItem ? "Group" : model.prop1
                   color: "red"
                 }
                 Text {
@@ -567,7 +574,7 @@ FocusScope {
                   anchors.right: propCol.right
                   elide: Text.ElideMiddle
                   anchors.leftMargin: 10
-                  text: model.prop2
+                  text: model.type === CommonEnums.GroupItem ? "Group" : model.prop2
                   color: "orange"
                 }
                 Text {
@@ -575,7 +582,7 @@ FocusScope {
                   anchors.right: propCol.right
                   elide: Text.ElideMiddle
                   anchors.leftMargin: 10
-                  text: model.prop3
+                  text: model.type === CommonEnums.GroupItem ? "Group" : model.prop3
                   color: "steelblue"
                 }
               }
