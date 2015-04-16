@@ -36,7 +36,7 @@ Item {
   property int animationDuration: 0
   property int gridViewDelegateRootDefaultHeight: 0
 
-  readonly property int lineWidths: 1
+  readonly property int lineWidths: 2
 
   Rectangle {
     id: arrowrect
@@ -68,7 +68,7 @@ Item {
       topMargin: -height
       left: dropDownRect.left
       right: arrowrect.left
-      rightMargin: (Math.sqrt(2) * arrowrect.width - arrowrect.width) / 2.0
+      rightMargin: (Math.sqrt(2) * arrowrect.width - arrowrect.width) / 2.0 - dropDownRootItem.lineWidths
     }
 
     height: dropDownRootItem.lineWidths
@@ -83,7 +83,7 @@ Item {
       top: dropDownRect.top
       topMargin: -height
       left: arrowrect.right
-      leftMargin: (Math.sqrt(2) * arrowrect.width - arrowrect.width) / 2.0
+      leftMargin: (Math.sqrt(2) * arrowrect.width - arrowrect.width) / 2.0 - dropDownRootItem.lineWidths
       right: dropDownRect.right
     }
 
@@ -111,16 +111,18 @@ Item {
 
     NumberAnimation on height {
       id: animIncreaseHeight
-      to: dropDownRootItem.maxDropDownHeight
-      running: false
+
       duration: dropDownRootItem.animationDuration
+      running: false
+      to: dropDownRootItem.maxDropDownHeight
     }
 
     NumberAnimation on height {
       id: animDecreaseHeight
-      to: dropDownRect.minHeight
-      running: false
+
       duration: dropDownRootItem.animationDuration
+      running: false
+      to: dropDownRect.minHeight
     }
 
     NumberAnimation {
@@ -153,7 +155,7 @@ Item {
         gridViewDelegateRootDecHeightAnim.complete()
 
         if (visible) {
-          x = rootItemForMappingDropDown.mapToItem(rootItemForOwningDropDown, 15, 0).x
+          x = rootItemForMappingDropDown.mapToItem(dropDownRootItem, 15, 0).x
 
           // Let animations handle final heights even if animations are not to be run
           animIncreaseHeight.start()
@@ -173,7 +175,7 @@ Item {
 
     Connections {
       target: gridViewDelegateRoot
-      onXChanged: dropDownRect.x = rootItemForMappingDropDown.mapToItem(rootItemForOwningDropDown, 15, 0).x
+      onXChanged: dropDownRect.x = rootItemForMappingDropDown.mapToItem(dropDownRootItem, 15, 0).x
     }
 
     Column {

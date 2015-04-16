@@ -295,11 +295,11 @@ DropArea {
 
               Connections {
                 target: gridViewHomePageDelegateRoot
-                onEnterPressed: simulateMouseRelease()
+                onEnterPressed: appItem.simulateMouseRelease()
               }
               Connections {
                 target: gridViewHomePageDelegateRoot
-                onReturnPressed: simulateMouseRelease()
+                onReturnPressed: appItem.simulateMouseRelease()
               }
             }
           }
@@ -327,11 +327,11 @@ DropArea {
 
               Connections {
                 target: gridViewHomePageDelegateRoot
-                onEnterPressed: simulateMouseRelease()
+                onEnterPressed: groupItem.simulateMouseRelease()
               }
               Connections {
                 target: gridViewHomePageDelegateRoot
-                onReturnPressed: simulateMouseRelease()
+                onReturnPressed: groupItem.simulateMouseRelease()
               }
             }
           }
