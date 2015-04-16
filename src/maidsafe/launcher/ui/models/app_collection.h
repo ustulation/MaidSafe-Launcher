@@ -30,6 +30,8 @@ namespace launcher {
 
 namespace ui {
 
+class AppCollection;
+
 class CommonEnums : public QObject {
   Q_OBJECT
   Q_ENUMS(ItemType)
@@ -51,6 +53,7 @@ class AppItem : public QObject {
   Q_PROPERTY(QString prop1 READ prop1 WRITE setProp1 NOTIFY prop1Changed FINAL)
   Q_PROPERTY(QString prop2 READ prop2 WRITE setProp2 NOTIFY prop2Changed FINAL)
   Q_PROPERTY(QString prop3 READ prop3 WRITE setProp3 NOTIFY prop3Changed FINAL)
+  Q_PROPERTY(QObject* parentGroup READ parentGroup WRITE setParentGroup NOTIFY parentGroupChanged FINAL)
 
  public:
   template<typename T, typename U>
@@ -83,6 +86,10 @@ class AppItem : public QObject {
   void setName(const QString new_name) { if (new_name != name_) { name_ = new_name; emit nameChanged(name_); } }
   Q_SIGNAL void nameChanged(QString new_name);
 
+  QObject* parentGroup() const;
+  void setParentGroup(QObject* const new_group);
+  Q_SIGNAL void parentGroupChanged(QObject* new_group);
+
   QColor objColor() const { return color_; }
   void setObjColor(const QColor new_color) { if (new_color != color_) { color_ = new_color; emit objColorChanged(color_); } }
   Q_SIGNAL void objColorChanged(QColor new_color);
@@ -113,6 +120,7 @@ class AppItem : public QObject {
   QString prop1_{tr("Some other stuff to be displayed.")};
   QString prop2_{tr("This is yet another stuff that is to be displayed.")};
   QString prop3_{tr("This is the last thing that is meant to be displayed.")};
+  AppCollection* parent_group_{nullptr};
 };
 
 class AppCollection : public QAbstractListModel {
@@ -155,17 +163,22 @@ class AppCollection : public QAbstractListModel {
   int rowCount(const QModelIndex& = QModelIndex{}) const override;
   QVariant data(const QModelIndex& index, int role /*= Qt::DisplayRole */) const override;
 
-  void AddData(const QString& name, const QColor& color);
-  void AddData(std::unique_ptr<QObject> new_data);
-  void RemoveData(const QString& name);
+  void InsertItem(std::unique_ptr<QObject> new_item, const int index);
+  void AppendAppItem(const QString& name, const QColor& color);
+  void AppendItem(std::unique_ptr<QObject> new_item);
+
+  void RemoveItem(const int item_index);
+  void RemoveItem(const QString& name);
+
+  void MoveItem(int index_from, int index_to);
 
   void UpdateData(const QString& name, std::unique_ptr<QObject> new_data);
   void UpdateData(const QString& name, const QString& new_name);
   void UpdateData(const QString& name, const QColor& new_color);
 
-  void MoveData(int index_from, int index_to);
   void MakeNewGroup(const int item_index_0, const int item_index_1);
   void AddToGroup(const int group_index, const int source_index);
+  void ExtractToParentGroup(const int item_index);
 
   void StartRandomAdd();
   void StopRandomAdd();
@@ -184,7 +197,17 @@ class AppCollection : public QAbstractListModel {
   QString name_{tr("Untitled Group")};
   AppCollection* parent_group_{nullptr};
 
-  ModelRoleContainer_t roles_;
+  ModelRoleContainer_t roles_ {
+    {ItemRole, "item"},
+    {TypeRole, "type"},
+    {ParentGroupRole, "parentGroup"},
+    {NameRole, "name"},
+    {ColorRole, "color"},
+    {Prop0Role, "prop0"},
+    {Prop1Role, "prop1"},
+    {Prop2Role, "prop2"},
+    {Prop3Role, "prop3"},
+  };
   std::vector<std::unique_ptr<QObject>> collection_;
 
   QTimer timer_;
