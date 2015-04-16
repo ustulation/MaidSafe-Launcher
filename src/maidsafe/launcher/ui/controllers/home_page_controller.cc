@@ -56,7 +56,7 @@ void HomePageController::SetCurrentView(const HomePageViews new_current_view) {
 }
 
 void HomePageController::move(int index_from, int index_to) {
-  app_collection_->MoveData(index_from, index_to);
+  app_collection_->MoveItem(index_from, index_to);
 }
 
 void HomePageController::makeNewGroup(const int item_index_0, const int item_index_1) {
@@ -68,7 +68,7 @@ void HomePageController::addToGroup(const int group_index, const int source_inde
 }
 
 void HomePageController::addAppRequested(const QUrl& file_url) {
-  app_collection_->AddData(file_url.path(), QColor{130, 80, 255});
+  app_collection_->AppendAppItem(file_url.path(), QColor{130, 80, 255});
 }
 
 void HomePageController::Invoke() {

@@ -58,7 +58,7 @@ Item {
       if (mainController_.currentView === MainController.HandleAccount) {
         "account_handling/AccountHandlerView.qml"
       } else if (mainController_.currentView === MainController.HomePage) {
-        "home_page/HomePageView.qml"
+        "home_page/HomePageGridView.qml"
       } else {
         ""
       }

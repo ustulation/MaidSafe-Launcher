@@ -24,31 +24,37 @@ namespace launcher {
 
 namespace ui {
 
+QObject* AppItem::parentGroup() const {
+  return parent_group_;
+}
+
+void AppItem::setParentGroup(QObject* const new_group) {
+  if (new_group != parent_group_) {
+    parent_group_ = dynamic_cast<AppCollection*>(new_group);
+    emit parentGroupChanged(parent_group_);
+  }
+}
+
 AppCollection::AppCollection(const bool fill, QObject* parent)
     : QAbstractListModel{parent} {
   if (fill) {
     collection_.emplace_back(new AppItem{"Zero", QColor{255, 0, 0}});
     collection_.emplace_back(new AppItem{"One", QColor{0, 255, 0}});
+    collection_.emplace_back(new AppCollection{this});
     collection_.emplace_back(new AppItem{"Two", QColor{0, 0, 255}});
     collection_.emplace_back(new AppItem{"Three", QColor{255, 150, 100}});
     collection_.emplace_back(new AppItem{"Four", QColor{255, 0, 255}});
     collection_.emplace_back(new AppItem{"Five", QColor{0, 255, 255}});
   }
 
-  roles_[ItemRole] = "item";
-  roles_[TypeRole] = "type";
-  roles_[ParentGroupRole] = "parentGroup";
-  roles_[NameRole] = "name";
-  roles_[ColorRole] = "color";
-  roles_[Prop0Role] = "prop0";
-  roles_[Prop1Role] = "prop1";
-  roles_[Prop2Role] = "prop2";
-  roles_[Prop3Role] = "prop3";
-
-  timer_.setInterval(3000);
+  timer_.setInterval(10000);
+  timer_.setSingleShot(true);
   connect(&timer_, SIGNAL(timeout()), this, SLOT(OnTimeout()));
 //  timer_.start();
 }
+
+AppCollection::AppCollection(AppCollection *parent_group)
+    : parent_group_{parent_group} { }
 
 AppCollection::ModelRoleContainer_t AppCollection::roleNames() const {
   return roles_;
@@ -98,34 +104,50 @@ QVariant AppCollection::data(const QModelIndex& index, int role /*= Qt::DisplayR
   return return_val;
 }
 
-void AppCollection::AddData(const QString& name, const QColor& color) {
-  beginInsertRows(QModelIndex{}, collection_.size(), collection_.size());
-  collection_.emplace_back(new AppItem(name, color));
-  endInsertRows();
+void AppCollection::InsertItem(std::unique_ptr<QObject> new_item, const int index) {
+  if (index >= 0) {
+    new_item->setProperty("parentGroup", QVariant::fromValue(this));
+
+    if (index >= static_cast<int>(collection_.size())) {
+      beginInsertRows(QModelIndex{}, collection_.size(), collection_.size());
+      collection_.emplace_back(std::move(new_item));
+    } else {
+      beginInsertRows(QModelIndex{}, index, index);
+      collection_.insert(collection_.begin() + index, std::move(new_item));
+    }
+    endInsertRows();
+  }
 }
 
-void AppCollection::AddData(std::unique_ptr<QObject> new_data) {
-  qDebug() << this;
-  this->beginInsertRows(QModelIndex{}, collection_.size(), collection_.size());
-  this->collection_.emplace_back(std::move(new_data));
-  this->endInsertRows();
+void AppCollection::AppendItem(std::unique_ptr<QObject> new_item) {
+  InsertItem(std::move(new_item), collection_.size());
 }
 
-void AppCollection::RemoveData(const QString& name) {
+void AppCollection::AppendAppItem(const QString& name, const QColor& color) {
+  AppendItem(std::unique_ptr<QObject>{new AppItem{name, color}});
+}
+
+void AppCollection::RemoveItem(const int item_index) {
+  if (item_index >=0 && item_index < static_cast<int>(collection_.size())) {
+    beginRemoveRows(QModelIndex{}, item_index, item_index);
+    collection_.erase(collection_.begin() + item_index);
+    endRemoveRows();
+  }
+}
+
+void AppCollection::RemoveItem(const QString& name) {
   for (std::size_t index{}; index < collection_.size(); ++index) {
     if (collection_[index]->property("name").toString() == name) {
-      beginRemoveRows(QModelIndex{}, index, index);
-      collection_.erase(collection_.begin() + index);
-      endRemoveRows();
+      RemoveItem(index);
       break;
     }
   }
 }
 
-void AppCollection::UpdateData(const QString& name, std::unique_ptr<QObject> new_data) {
+void AppCollection::UpdateData(const QString& name, std::unique_ptr<QObject> new_item) {
   for (std::size_t index{}; index < collection_.size(); ++index) {
     if (collection_[index]->property("name").toString() == name) {
-      collection_[index] = std::move(new_data);
+      collection_[index] = std::move(new_item);
       break;
     }
   }
@@ -150,14 +172,15 @@ void AppCollection::UpdateData(const QString& name, const QColor& new_color) {
 }
 
 void AppCollection::OnTimeout() {
-  auto id(qrand() % 256);
-  auto r(qrand() % 256);
-  auto g(qrand() % 256);
-  auto b(qrand() % 256);
-  AddData(QString{"Id: %1"}.arg(id), QColor{r, g, b});
+  RemoveItem(4);
+//  auto id(qrand() % 256);
+//  auto r(qrand() % 256);
+//  auto g(qrand() % 256);
+//  auto b(qrand() % 256);
+//  AppendAppItem(QString{"Id: %1"}.arg(id), QColor{r, g, b});
 }
 
-void AppCollection::MoveData(int index_from, int index_to) {
+void AppCollection::MoveItem(int index_from, int index_to) {
   int size = collection_.size();
   if (index_from >= 0 && index_from < size &&
       index_to   >= 0 && index_to   < size &&
@@ -188,24 +211,16 @@ void AppCollection::MakeNewGroup(const int item_index_0, const int item_index_1)
     auto item_0(std::move(collection_[item_index_0]));
     auto item_1(std::move(collection_[item_index_1]));
 
-    auto app_collection(new AppCollection{false});
-    app_collection->AddData(std::move(item_0));
-    app_collection->AddData(std::move(item_1));
+    auto new_app_collection(new AppCollection{this});
+    new_app_collection->AppendItem(std::move(item_0));
+    new_app_collection->AppendItem(std::move(item_1));
 
-    std::unique_ptr<QObject> new_group{app_collection};
-    app_collection = nullptr;
+    std::unique_ptr<QObject> new_group{new_app_collection};
+    new_app_collection = nullptr;
 
-    beginRemoveRows(QModelIndex{}, item_index_0, item_index_0);
-    collection_.erase(collection_.begin() + item_index_0);
-    endRemoveRows();
-
-    beginInsertRows(QModelIndex{}, item_index_0, item_index_0);
-    collection_.insert(collection_.begin() + item_index_0, std::move(new_group));
-    endInsertRows();
-
-    beginRemoveRows(QModelIndex{}, item_index_1, item_index_1);
-    collection_.erase(collection_.begin() + item_index_1);
-    endRemoveRows();
+    RemoveItem(item_index_0);
+    InsertItem(std::move(new_group), item_index_0);
+    RemoveItem(item_index_1);
   }
 }
 
@@ -214,16 +229,17 @@ void AppCollection::AddToGroup(const int group_index, const int source_index) {
       group_index >= 0 && group_index < static_cast<int>(collection_.size()) &&
       source_index >= 0 && source_index < static_cast<int>(collection_.size())) {
     if (auto group = dynamic_cast<AppCollection*>(&*collection_[group_index])) {
-      auto item(std::move(collection_[source_index]));
-      qDebug() << this << group;
-      group->AddData(std::move(item));
-
-      beginRemoveRows(QModelIndex{}, source_index, source_index);
-      collection_.erase(collection_.begin() + source_index);
-      endRemoveRows();
-    } else {
-      qDebug() << "PANIC";
+      group->AppendItem(std::move(collection_[source_index]));
+      RemoveItem(source_index);
     }
+  }
+}
+
+void AppCollection::ExtractToParentGroup(const int item_index) {
+  if (item_index >= 0 && item_index < static_cast<int>(collection_.size()) &&
+      parent_group_ != nullptr) {
+    parent_group_->AppendItem(std::move(collection_[item_index]));
+    RemoveItem(item_index);
   }
 }
 
