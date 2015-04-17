@@ -27,6 +27,8 @@ import "../../custom_components"
 DelegateBase {
   id: groupItemDelegateRoot
 
+  property Item gridViewContainerRoot: null
+
   function simulateMouseRelease() {
     clickableMouseArea.simulateMouseRelease()
   }
@@ -52,8 +54,7 @@ DelegateBase {
 
       if (!wasDragged) {
         checked = true
-        gridView.indexOfCurrentGroupInParentGroup.push(model.index)
-        homePageController_.currentHomePageModel = model.item
+        gridViewContainerRoot.enterSubGroup(gridViewDelegateRoot, model.item, model.index)
       } else {
         gridView.move.enabled = false
         groupItemDelegateRoot.recalculateNeighbours()
