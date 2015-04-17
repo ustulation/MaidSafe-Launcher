@@ -40,7 +40,7 @@ AppCollection::AppCollection(const bool fill, QObject* parent)
   if (fill) {
     collection_.emplace_back(new AppItem{"Zero", QColor{255, 0, 0}});
     collection_.emplace_back(new AppItem{"One", QColor{0, 255, 0}});
-    collection_.emplace_back(new AppCollection{this});
+//    collection_.emplace_back(new AppCollection{this});
     collection_.emplace_back(new AppItem{"Two", QColor{0, 0, 255}});
     collection_.emplace_back(new AppItem{"Three", QColor{255, 150, 100}});
     collection_.emplace_back(new AppItem{"Four", QColor{255, 0, 255}});

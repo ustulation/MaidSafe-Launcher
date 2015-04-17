@@ -135,7 +135,7 @@ Item {
       duration: dropDownRootItem.animationDuration
 
       running: false
-      to: gridViewDelegateRootDefaultHeight + dropDownRootItem.maxDropDownHeight + 20
+      to: gridViewDelegateRootDefaultHeight + dropDownRootItem.maxDropDownHeight
     }
 
     NumberAnimation {
@@ -179,9 +179,10 @@ Item {
 
     Connections {
       target: gridViewDelegateRoot
-      onXChanged: dropDownRect.x = rootItemForMappingDropDown.mapToItem(dropDownRootItem,
-                                                                        dropDownRootItem.horizontalMarginsForDropDown,
-                                                                        0).x
+      onXChanged: dropDownRect.x =
+                  rootItemForMappingDropDown.mapToItem(dropDownRootItem,
+                                                       dropDownRootItem.horizontalMarginsForDropDown,
+                                                       0).x
     }
 
     Column {

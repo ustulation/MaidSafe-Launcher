@@ -88,7 +88,7 @@ DelegateBase {
       // To cater for informing that this drag is no longer active
       if (drag.active) {
         gridView.someDragActive = false
-        gridView.queuedDisableMoveTransition.start()
+        gridView.queuedDisableMoveTransition.restart()
       }
     }
 
