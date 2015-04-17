@@ -194,7 +194,7 @@ class AppCollection : public QAbstractListModel {
 
  private:
   CommonEnums::ItemType type_{CommonEnums::GroupItem};
-  QString name_{tr("Untitled Group")};
+  QString name_{tr("Untitled")};
   AppCollection* parent_group_{nullptr};
 
   ModelRoleContainer_t roles_ {

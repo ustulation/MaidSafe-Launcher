@@ -68,7 +68,7 @@ DropArea {
 
     readonly property int moveTransitionDuration: 200
     readonly property int dropActivationInterval: 1000
-    readonly property int delegateWidth: 50
+    readonly property int delegateWidth: 75
     property bool someDragActive: false
     property alias queuedDisableMoveTransition: queuedDisableMoveTransition
 
@@ -80,9 +80,10 @@ DropArea {
       fill: parent
       topMargin: 100
       margins: 20
+      rightMargin: gridViewHomePage.delegateWidth
     }
 
-    spacing: 50
+    spacing: delegateWidth
     columns: Math.max(1, width / (delegateWidth + spacing))
 
     Timer {
@@ -103,86 +104,37 @@ DropArea {
       }
     }
 
-    Rectangle {
-      id: addAppRect
+    Loader {
+      id: addExtractGoBackLoader
 
-      width: gridViewHomePage.delegateWidth
-      height: width
-      radius: 5
-
-      color: "#80808080"
-
-      FileDialog {
-        id: fileDialog
-
-        onAccepted: {
-          homePageController_.addAppFromUrl(fileUrl)
+      sourceComponent: {
+        if (homePageController_.currentHomePageModel.parentGroup) {
+          goBackOrExtractToParentComponent
+        } else {
+          addAppComponent
         }
       }
 
-      Rectangle {
-        id: horizPlusRect
+      focus: true
+      onLoaded: item.focus = true
 
-        anchors.centerIn: parent
+      Component {
+        id: addAppComponent
 
-        width: parent.width - 10
-        height: 2
-        color: "grey"
-        rotation: homePageController_.currentHomePageModel.parentGroup &&
-                  gridViewHomePage.someDragActive ? 45 : 0
-      }
-
-      Rectangle {
-        id: vertPlusRect
-
-        anchors.centerIn: parent
-
-        width: parent.width - 10
-        height: 2
-        color: "grey"
-        rotation: homePageController_.currentHomePageModel.parentGroup &&
-                  gridViewHomePage.someDragActive ? 135 : 90
-      }
-
-      DropArea {
-        id: extractToParentDropArea
-
-        property Item sourceObj: null
-
-        anchors.fill: parent
-        enabled: homePageController_.currentHomePageModel.parentGroup
-        keys: ['' + CommonEnums.AppItem, '' + CommonEnums.GroupItem]
-
-        onEntered: {
-          sourceObj = drag.source
-          extractToParentTimer.restart()
-        }
-        onExited: {
-          extractToParentTimer.stop()
-          sourceObj = null
-        }
-
-        Timer {
-          id: extractToParentTimer
-
-          interval: gridViewHomePage.dropActivationInterval
-          onTriggered: {
-            // Removing item for which drop-area detected drag will deactivate drop-area for future drags
-            extractToParentDropArea.sourceObj.Drag.drop()
-            homePageController_.extractToParentGroup(extractToParentDropArea.sourceObj.index)
-          }
+        ClickToAddApp {
+          id: clickToAddApp
+          gridView: gridViewHomePage
         }
       }
 
-      MouseArea {
-        anchors.fill: parent
-        onClicked: {
-          if (homePageController_.currentHomePageModel.parentGroup === null) {
-            fileDialog.open()
-          } else {
-            homePageController_.currentHomePageModel = homePageController_.currentHomePageModel.parentGroup
-            gridViewHomePage.indexOfCurrentGroupInParentGroup.pop()
-          }
+      Component {
+        id: goBackOrExtractToParentComponent
+
+        GoBackOrExtractItemToParent {
+          id: goBackOrExtractItemToParent
+
+          gridView: gridViewHomePage
+          extractToParentTimerInterval: gridViewHomePage.dropActivationInterval
         }
       }
     }
