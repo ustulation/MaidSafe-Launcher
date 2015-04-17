@@ -84,11 +84,22 @@ DelegateBase {
     }
 
     Component.onCompleted: exclusiveGroup.bindCheckable(clickableMouseArea)
+    Component.onDestruction: {
+      // To cater for informing that this drag is no longer active
+      if (drag.active) {
+        gridView.someDragActive = false
+        gridView.queuedDisableMoveTransition.start()
+      }
+    }
 
     // When others are dragged
     Connections {
       target: gridView
-      onSomeDragActive: clickableMouseArea.checked = false
+      onSomeDragActiveChanged: {
+        if (gridView.someDragActive) {
+          clickableMouseArea.checked = false
+        }
+      }
     }
 
     onPressed: {
@@ -116,8 +127,8 @@ DelegateBase {
       if (drag.active) {
         gridView.move.enabled = true
         clickableMouseArea.wasDragged = true
-        gridView.someDragActive()
       }
+      gridView.someDragActive = drag.active
     }
   }
 
