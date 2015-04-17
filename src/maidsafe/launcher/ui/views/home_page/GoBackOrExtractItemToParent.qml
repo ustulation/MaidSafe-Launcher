@@ -29,6 +29,7 @@ FocusScope {
 
   property alias extractToParentTimerInterval: extractToParentTimer.interval
   property Grid gridView: null
+  property Item gridViewContainerRoot: null
 
   implicitWidth: childrenRect.width
   implicitHeight: childrenRect.height
@@ -88,10 +89,7 @@ FocusScope {
       id: goBackMouseArea
 
       anchors.fill: parent
-      onClicked: {
-        homePageController_.currentHomePageModel = homePageController_.currentHomePageModel.parentGroup
-        gridView.indexOfCurrentGroupInParentGroup.pop()
-      }
+      onClicked: gridViewContainerRoot.exitToParentGroup(homePageController_.currentHomePageModel.parentGroup)
     }
   }
 }
