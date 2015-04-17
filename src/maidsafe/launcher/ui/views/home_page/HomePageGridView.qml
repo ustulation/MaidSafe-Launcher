@@ -27,6 +27,8 @@ import "../../custom_components"
 DropArea {
   id: homePageGridViewRoot
 
+  focus: true
+
 //  anchors.fill: parent
 
   Component.onCompleted: {
@@ -58,9 +60,21 @@ DropArea {
   Grid {
     id: gridViewHomePage
 
-    readonly property int delegateWidth: 50
+    // One Group can be added to another group
+    readonly property bool allowGroupingOfGroups: false
+    // Sub-Groups are allowed to further perform further sub-grouping
+    readonly property bool allowGroupingInsideGroups: false
+    readonly property bool removeEmptySubGroups: true
 
-    signal someDragActive()
+    readonly property int moveTransitionDuration: 200
+    readonly property int dropActivationInterval: 1000
+    readonly property int delegateWidth: 50
+    property bool someDragActive: false
+    property alias queuedDisableMoveTransition: queuedDisableMoveTransition
+
+    // For efficiently removing empty sub-groups
+    // Change this whenever changing current-model
+    property var indexOfCurrentGroupInParentGroup: []
 
     anchors {
       fill: parent
@@ -71,14 +85,21 @@ DropArea {
     spacing: 50
     columns: Math.max(1, width / (delegateWidth + spacing))
 
+    Timer {
+      id: queuedDisableMoveTransition
+      interval: gridViewHomePage.moveTransitionDuration
+      onTriggered: moveTransition.enabled = false
+    }
+
     move: Transition {
       id: moveTransition
 
+      // So that resizing does not incur move transition - only drag does
       enabled: false
 
       NumberAnimation {
         properties: "x,y"
-        duration: 200
+        duration: gridViewHomePage.moveTransitionDuration
       }
     }
 
@@ -91,29 +112,76 @@ DropArea {
 
       color: "#80808080"
 
-      Rectangle {
-        anchors.centerIn: parent
+      FileDialog {
+        id: fileDialog
 
-        width: parent.width - 10
-        height: 2
-        color: "grey"
+        onAccepted: {
+          homePageController_.addAppFromUrl(fileUrl)
+        }
       }
+
       Rectangle {
+        id: horizPlusRect
+
         anchors.centerIn: parent
 
         width: parent.width - 10
         height: 2
         color: "grey"
-        rotation: 90
+        rotation: homePageController_.currentHomePageModel.parentGroup &&
+                  gridViewHomePage.someDragActive ? 45 : 0
+      }
+
+      Rectangle {
+        id: vertPlusRect
+
+        anchors.centerIn: parent
+
+        width: parent.width - 10
+        height: 2
+        color: "grey"
+        rotation: homePageController_.currentHomePageModel.parentGroup &&
+                  gridViewHomePage.someDragActive ? 135 : 90
+      }
+
+      DropArea {
+        id: extractToParentDropArea
+
+        property Item sourceObj: null
+
+        anchors.fill: parent
+        enabled: homePageController_.currentHomePageModel.parentGroup
+        keys: ['' + CommonEnums.AppItem, '' + CommonEnums.GroupItem]
+
+        onEntered: {
+          sourceObj = drag.source
+          extractToParentTimer.restart()
+        }
+        onExited: {
+          extractToParentTimer.stop()
+          sourceObj = null
+        }
+
+        Timer {
+          id: extractToParentTimer
+
+          interval: gridViewHomePage.dropActivationInterval
+          onTriggered: {
+            // Removing item for which drop-area detected drag will deactivate drop-area for future drags
+            extractToParentDropArea.sourceObj.Drag.drop()
+            homePageController_.extractToParentGroup(extractToParentDropArea.sourceObj.index)
+          }
+        }
       }
 
       MouseArea {
         anchors.fill: parent
         onClicked: {
-          if (homePageController_.homePageModel.parentGroup === null) {
+          if (homePageController_.currentHomePageModel.parentGroup === null) {
             fileDialog.open()
           } else {
-            homePageController_.homePageModel = homePageController_.homePageModel.parentGroup
+            homePageController_.currentHomePageModel = homePageController_.currentHomePageModel.parentGroup
+            gridViewHomePage.indexOfCurrentGroupInParentGroup.pop()
           }
         }
       }
@@ -122,9 +190,16 @@ DropArea {
     Repeater {
       id: gridRepeater
 
-      model: homePageController_.homePageModel
+      model: homePageController_.currentHomePageModel
 
-      onCountChanged: queuedConnectionTimer.restart()
+      onCountChanged: {
+        if (gridViewHomePage.removeEmptySubGroups && !count && homePageController_.currentHomePageModel.parentGroup) {
+          homePageController_.currentHomePageModel = homePageController_.currentHomePageModel.parentGroup
+          homePageController_.removeItem(gridViewHomePage.indexOfCurrentGroupInParentGroup.pop());
+        } else {
+          queuedConnectionTimer.restart()
+        }
+      }
 
       delegate: FocusScope {
         id: gridViewHomePageDelegateRoot
@@ -174,6 +249,8 @@ DropArea {
             rightMargin: -gridViewHomePage.spacing
           }
 
+          keys: ['' + CommonEnums.AppItem, '' + CommonEnums.GroupItem]
+
           onEntered: sourceObj = drag.source
 
           onExited: {
@@ -194,7 +271,7 @@ DropArea {
           Timer {
             id: displaceTimer
 
-            interval: 1000
+            interval: gridViewHomePage.dropActivationInterval
 
             onTriggered: {
               if (model.index > displaceDropArea.sourceObj.index) {
@@ -221,12 +298,19 @@ DropArea {
               rightMargin: gridViewHomePage.spacing
             }
 
-            keys: ['' + CommonEnums.AppItem]
+            keys: if (gridViewHomePage.allowGroupingOfGroups) {
+                    ['' + CommonEnums.AppItem, '' + CommonEnums.GroupItem]
+                  } else {
+                    ['' + CommonEnums.AppItem]
+                  }
+
+            enabled: gridViewHomePage.allowGroupingInsideGroups ||
+                     !homePageController_.currentHomePageModel.parentGroup
 
             Timer {
               id: makeGroupTimer
 
-              interval: 1000
+              interval: gridViewHomePage.dropActivationInterval
 
               onTriggered: {
                 if (grouperDropArea.sourceObj.index !== model.index) {

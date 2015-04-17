@@ -33,14 +33,16 @@ HomePageController::HomePageController(MainWindow& main_window, QObject* parent)
 
 HomePageController::~HomePageController() = default;
 
-QObject* HomePageController::homePageModel() const {
+QObject* HomePageController::currentHomePageModel() const {
   return app_collection_;
 }
 
-void HomePageController::setHomePageModel(QObject* new_model) {
+void HomePageController::setCurrentHomePageModel(QObject* new_model) {
   if (new_model != app_collection_) {
-    app_collection_ = dynamic_cast<AppCollection*>(new_model);
-    emit homePageModelChanged(app_collection_);
+    if (auto new_app_coll = dynamic_cast<AppCollection*>(new_model)) {
+      app_collection_ = new_app_coll;
+      emit currentHomePageModelChanged(app_collection_);
+    }
   }
 }
 
@@ -55,7 +57,7 @@ void HomePageController::SetCurrentView(const HomePageViews new_current_view) {
   }
 }
 
-void HomePageController::move(int index_from, int index_to) {
+void HomePageController::move(const int index_from, const int index_to) {
   app_collection_->MoveItem(index_from, index_to);
 }
 
@@ -67,8 +69,16 @@ void HomePageController::addToGroup(const int group_index, const int source_inde
   app_collection_->AddToGroup(group_index, source_index);
 }
 
-void HomePageController::addAppRequested(const QUrl& file_url) {
+void HomePageController::extractToParentGroup(const int item_index) {
+  app_collection_->ExtractToParentGroup(item_index);
+}
+
+void HomePageController::addAppFromUrl(const QUrl& file_url) {
   app_collection_->AppendAppItem(file_url.path(), QColor{130, 80, 255});
+}
+
+void HomePageController::removeItem(const int item_index) {
+  app_collection_->RemoveItem(item_index);
 }
 
 void HomePageController::Invoke() {

@@ -52,7 +52,8 @@ DelegateBase {
 
       if (!wasDragged) {
         checked = true
-        homePageController_.homePageModel = model.item
+        gridView.indexOfCurrentGroupInParentGroup.push(model.index)
+        homePageController_.currentHomePageModel = model.item
       } else {
         gridView.move.enabled = false
         groupItemDelegateRoot.recalculateNeighbours()
@@ -63,6 +64,14 @@ DelegateBase {
     // Only reason of this combo is to close drop-down elsewhere in app-item
     property bool checked: false
     Component.onCompleted: exclusiveGroup.bindCheckable(clickableMouseArea)
+
+    Component.onDestruction: {
+      // To cater for informing that this drag is no longer active
+      if (drag.active) {
+        gridView.someDragActive = false
+        gridView.queuedDisableMoveTransition.start()
+      }
+    }
 
     onPressed: {
       scaleUpAnim.stop()
@@ -83,8 +92,8 @@ DelegateBase {
       if (drag.active) {
         gridView.move.enabled = true
         clickableMouseArea.wasDragged = true
-        gridView.someDragActive()
       }
+      gridView.someDragActive = drag.active
     }
   }
 }

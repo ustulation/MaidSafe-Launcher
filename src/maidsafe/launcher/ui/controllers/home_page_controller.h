@@ -34,7 +34,7 @@ class AppCollection;
 class HomePageController : public QObject {
   Q_OBJECT
 
-  Q_PROPERTY(QObject* homePageModel READ homePageModel WRITE setHomePageModel NOTIFY homePageModelChanged FINAL)
+  Q_PROPERTY(QObject* currentHomePageModel READ currentHomePageModel WRITE setCurrentHomePageModel NOTIFY currentHomePageModelChanged FINAL)
   Q_PROPERTY(HomePageViews currentView READ currentView NOTIFY currentViewChanged FINAL)
 
  public:
@@ -49,17 +49,19 @@ class HomePageController : public QObject {
   HomePageController& operator=(HomePageController&&) = delete;
   HomePageController& operator=(const HomePageController&) = delete;
 
-  QObject* homePageModel() const;
-  void setHomePageModel(QObject* new_model);
-  Q_SIGNAL void homePageModelChanged(QObject* new_model);
+  QObject* currentHomePageModel() const;
+  void setCurrentHomePageModel(QObject* new_model);
+  Q_SIGNAL void currentHomePageModelChanged(QObject* new_model);
 
   HomePageViews currentView() const;
   void SetCurrentView(const HomePageViews new_current_view);
 
-  Q_INVOKABLE void move(int index_from, int index_to);
+  Q_INVOKABLE void move(const int index_from, const int index_to);
   Q_INVOKABLE void makeNewGroup(const int item_index_0, const int item_index_1);
-  Q_INVOKABLE void addToGroup(const int item_index_0, const int item_index_1);
-  Q_INVOKABLE void addAppRequested(const QUrl& file_url);
+  Q_INVOKABLE void addToGroup(const int group_index, const int source_index);
+  Q_INVOKABLE void extractToParentGroup(const int item_index);
+  Q_INVOKABLE void addAppFromUrl(const QUrl& file_url);
+  Q_INVOKABLE void removeItem(const int item_index);
 
  signals: // NOLINT - Spandan
   void currentViewChanged(HomePageViews new_view);

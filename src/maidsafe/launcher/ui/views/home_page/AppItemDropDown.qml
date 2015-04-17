@@ -37,6 +37,7 @@ Item {
   property int gridViewDelegateRootDefaultHeight: 0
 
   readonly property int lineWidths: 2
+  readonly property int horizontalMarginsForDropDown: 15
 
   Rectangle {
     id: arrowrect
@@ -105,7 +106,8 @@ Item {
     readonly property int minHeight: arrowrect.height / 2
 
     height: minHeight
-    width: rootItemForMappingDropDown.width - 30
+    width: rootItemForMappingDropDown.width -
+           dropDownRootItem.horizontalMarginsForDropDown * 2
 
     Component.onCompleted: created = true
 
@@ -149,13 +151,15 @@ Item {
 
     onVisibleChanged: {
       if (created) {
-        animIncreaseHeight.complete()
-        animDecreaseHeight.complete()
-        gridViewDelegateRootIncHeightAnim.complete()
-        gridViewDelegateRootDecHeightAnim.complete()
+        animIncreaseHeight.stop()
+        animDecreaseHeight.stop()
+        gridViewDelegateRootIncHeightAnim.stop()
+        gridViewDelegateRootDecHeightAnim.stop()
 
         if (visible) {
-          x = rootItemForMappingDropDown.mapToItem(dropDownRootItem, 15, 0).x
+          x = rootItemForMappingDropDown.mapToItem(dropDownRootItem,
+                                                   dropDownRootItem.horizontalMarginsForDropDown,
+                                                   0).x
 
           // Let animations handle final heights even if animations are not to be run
           animIncreaseHeight.start()
@@ -175,7 +179,9 @@ Item {
 
     Connections {
       target: gridViewDelegateRoot
-      onXChanged: dropDownRect.x = rootItemForMappingDropDown.mapToItem(dropDownRootItem, 15, 0).x
+      onXChanged: dropDownRect.x = rootItemForMappingDropDown.mapToItem(dropDownRootItem,
+                                                                        dropDownRootItem.horizontalMarginsForDropDown,
+                                                                        0).x
     }
 
     Column {
